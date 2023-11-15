@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "C:\\Python311",
+        "./Server/models"
+    ]
+}
