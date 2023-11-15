@@ -2,10 +2,6 @@ import cv2
 from PIL import Image
 from pytesseract import pytesseract
 
-#pip install opencv-python pytesseract   
-# pip install pytesseract tesseract  
-# https://www.youtube.com/watch?v=t4c-WkLWH9I&ab_channel=AKPython
-
 def capture_and_recognize():
     # Initialiser la capture vidéo à partir de la caméra par défaut (index 0)
     camera = cv2.VideoCapture(0)
@@ -20,6 +16,9 @@ def capture_and_recognize():
         text = pytesseract.image_to_string(Image.fromarray(image))
 
         print("Texte détecté : ", text[:-1])
+
+        if "Théorie des graphes" in text:
+            print("Présent")
 
         # Quitter la boucle si la touche 'q' est enfoncée
         if cv2.waitKey(1) & 0xFF == ord('q'):
