@@ -1,4 +1,5 @@
 from connection_db import conn 
+import bcrypt
 
 class User:
     myresult=""
@@ -44,6 +45,17 @@ class User:
         self.cursor.execute("SELECT * FROM users WHERE id=%s",(self.id))
         self.myresult = self.cursor.fetchone()
         return self.myresult
+    
+    @staticmethod
+    def check_password(username, password):
+        User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+        user_data = User.cursor.fetchone()
+
+        if user_data:
+            stored_password = user_data["password"] 
+            return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
+
+        return False
     
     
 
