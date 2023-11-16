@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Authentification from './pages/Authentification';
 import SignUp from './pages/SignUp';
 import { ChakraProvider } from '@chakra-ui/react'
+import Landing from './pages/Landing';
 
 
 const App = () => {
@@ -12,8 +13,9 @@ const App = () => {
 
     <Router>
       <Routes>
-        <Route path="/" element={<Authentification />} />
+        <Route path="/Authentification" element={<Authentification />} />
         <Route path="/SignUp" element={<SignUp/>} />
+        <Route path="/" element={<Landing/>} />
       </Routes>
     </Router>
     </ChakraProvider>

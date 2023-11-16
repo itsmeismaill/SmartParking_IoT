@@ -12,8 +12,10 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { Link, useNavigate } from 'react-router-dom'
 
 const Authentification = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -92,6 +94,7 @@ const Authentification = () => {
                 <Checkbox>Remember me</Checkbox>
                 <Text color={'blue.400'}>Forgot password?</Text>
               </Stack>
+              
               <Button
                 bg={'blue.400'}
                 color={'white'}
@@ -99,8 +102,20 @@ const Authentification = () => {
                 _hover={{
                   bg: 'blue.500',
                 }}>
-                Sign in
+                Sign In
               </Button>
+
+              <Button
+                bg={'blue.400'}
+                color={'white'}
+                _hover={{
+                  bg: 'blue.500',
+                
+                }}
+                 onClick={()=>navigate("/SignUp")}>
+                Sign Up
+              </Button>
+
             </Stack>
           </Stack>
         </Box>

@@ -16,8 +16,10 @@ import {
   Link,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
+    const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     id:'2',
@@ -143,7 +145,7 @@ const SignUp = () => {
             </Stack>
             <Stack pt={6}>
               <Text align={'center'}>
-                Already a user? <Link color={'blue.400'}>Login</Link>
+                Already a user? <Link onClick={()=>navigate("/Authentification")} color={'blue.400'}>Login</Link>
               </Text>
             </Stack>
           </Stack>
