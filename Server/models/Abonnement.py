@@ -1,4 +1,6 @@
 from connection_db import conn
+
+
 class Abonnement:
     myresult=""
     request=""
@@ -32,9 +34,11 @@ class Abonnement:
         Abonnement.myresult = Abonnement.cursor.fetchall()
         return Abonnement.myresult
     
-    def get_by_id(self):
-        self.cursor.execute("SELECT * FROM abonnements WHERE id=%s",(self.id))
-        self.myresult = self.cursor.fetchone()
-        return self.myresult
+    def get_by_id(id):
+        Abonnement.cursor.execute("SELECT * FROM abonnements WHERE id=%s",(id))
+        Abonnement.myresult = Abonnement.cursor.fetchone()
+        return Abonnement.myresult
+    
+
     
 

@@ -45,7 +45,9 @@ const Authentification = () => {
 
       if (response.ok) {
         const userData = await response.json();
-        console.log('User connected', userData);
+        console.log('User connected');
+        navigate('/HomeClient');
+
         // Perform any additional actions on success
       } else {
         console.error('Error connection', response.statusText);
@@ -102,6 +104,7 @@ const Authentification = () => {
                 _hover={{
                   bg: 'blue.500',
                 }}>
+                
                 Sign In
               </Button>
 

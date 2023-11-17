@@ -47,4 +47,4 @@ class TimeParking:
         self.myresult = self.cursor.fetchone()
         return self.myresult
     
-        
+

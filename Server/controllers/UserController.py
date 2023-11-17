@@ -1,6 +1,7 @@
 from models.User import User
 from flask import jsonify, request
 from flask import Blueprint,session
+from flask_session import Session
 import bcrypt
 
 user = Blueprint('user', __name__)
@@ -44,9 +45,16 @@ def login():
     data = request.get_json()
     username = data['username']
     password = data['password']
+    print(username)
+    # Vérifier le mot de passe et récupérer l'utilisateur
+    user = User.get_by_username(username)
 
-    if User.check_password(username, password):
-        return jsonify({'message': 'Login successful'})
+    if user and user.check_password(username , password):
+        # Stocker l'id de l'utilisateur dans la session
+        session['user_id'] = user.id
+        session['username'] = user.username
+        print(session)
+        return jsonify({ 'message': 'Login successful'})
     else:
         return jsonify({'message': 'Login failed'})
 

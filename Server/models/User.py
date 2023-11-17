@@ -53,22 +53,13 @@ class User:
     def get_by_username(username):
         User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
         user_data = User.cursor.fetchone()
+        print (user_data)
         
         if user_data:
-            return User(*user_data)
+           return User(**user_data)
+
         else:
             return None
-
-    @staticmethod
-    def check_password(username, password):
-        User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
-        user_data = User.cursor.fetchone()
-
-        if user_data:
-            stored_password = user_data[2] 
-            return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
-
-        return False
     
     @staticmethod
     def check_password(username, password):
