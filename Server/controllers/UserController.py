@@ -1,9 +1,13 @@
 from models.User import User
 from flask import jsonify, request
 from flask import Blueprint,session
-import bcrypt
+# import bcrypt
+
+from flask_bcrypt import Bcrypt
 
 user = Blueprint('user', __name__)
+
+bcrypt = Bcrypt()
 
 @user.route('/users', methods=['GET'], )
 def get_all_users():
@@ -15,16 +19,35 @@ def get_user_by_id(id):
     user = User.get_by_id(User (id,"","","","","",""))
     return jsonify(user)
 
-@user.route('/users', methods=['POST'], )
+@user.route('/users', methods=['POST'])
 def add_user():
-    data = request.get_json()
-    print(data)
-    data['password'] = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
-    user = User(data['id'],data['username'],data['cin'],data['telephone'], data['password'] ,data['email'],data['role'])
-    
-    user.save()
-    return jsonify(user)
+    try:
+        data = request.get_json()
 
+        required_fields = ['id', 'username', 'cin', 'telephone', 'password', 'email', 'role']
+        for field in required_fields:
+            if field not in data:
+                raise ValueError(f"Missing required field: {field}")
+
+        hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+
+        user = User(
+            data['id'],
+            data['username'],
+            data['cin'],
+            data['telephone'],
+            hashed_password,
+            data['email'],
+            data['role']
+        )
+        user.save()
+
+        return jsonify({
+            'message': 'User added successfully',
+            "data": user.__dict__
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
 @user.route('/users/<int:id>', methods=['PUT'], )
 def update_user(id):
@@ -45,11 +68,16 @@ def login():
     username = data['username']
     password = data['password']
 
-    if User.check_password(username, password):
+    user = User.get_by_username(username)
+
+    print(f"Stored hashed password: {user.password}")
+    print(f"Entered password: {password}")
+
+    if user and bcrypt.check_password_hash(user.password, password):
         return jsonify({'message': 'Login successful'})
     else:
         return jsonify({'message': 'Login failed'})
-
+    
 
 @user.route('/logout', methods=['GET'])
 def logout():
