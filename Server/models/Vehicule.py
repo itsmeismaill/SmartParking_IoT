@@ -1,5 +1,9 @@
 from connection_db import conn
 
+import cv2
+from PIL import Image
+from pytesseract import pytesseract
+
 class Vehicule:
     myresult=""
     request=""
@@ -45,3 +49,5 @@ class Vehicule:
         self.cursor.execute("SELECT * FROM vehicules WHERE matricule=%s",(self.matricule))
         self.myresult = self.cursor.fetchone()
         return self.myresult
+    
+            

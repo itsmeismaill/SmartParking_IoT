@@ -23,8 +23,6 @@ def add_vehicule():
     return jsonify(vehicule.__dict__)
 
 
-
-
 @vehicule.route('/vehicules/<int:id>', methods=['PUT'], )
 def update_vehicule(id):
     data = request.get_json()

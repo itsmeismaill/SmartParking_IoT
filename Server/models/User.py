@@ -18,8 +18,8 @@ class User:
 
 
     def save(self):
-        hashed_password = bcrypt.hashpw(self.password.encode('utf-8'), bcrypt.gensalt())
-        self.cursor.execute("INSERT INTO `users` (`id`, `username`, `password`,`cin`,`telephone`,`email`,`role`) VALUES (NULL, %s, %s,%s,%s,%s,%s);",(self.username,hashed_password,self.cin,self.telephone,self.email,self.role))
+        # hashed_password = bcrypt.hashpw(self.password.encode('utf-8'), bcrypt.gensalt())
+        self.cursor.execute("INSERT INTO `users` (`id`, `username`, `password`,`cin`,`telephone`,`email`,`role`) VALUES (NULL, %s, %s,%s,%s,%s,%s);",(self.username,self.password,self.cin,self.telephone,self.email,self.role))
         conn.commit()
         print("User added successfully")
         return True
@@ -54,32 +54,36 @@ class User:
         User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
         user_data = User.cursor.fetchone()
         
+        print(f"Retrieved user data: {user_data}")
+
         if user_data:
-            return User(*user_data)
+            user = User(
+                user_data['id'],
+                user_data['username'],
+                user_data['cin'],
+                user_data['telephone'],
+                user_data['password'],
+                user_data['email'],
+                user_data['role']
+            )
+
+            print(f"Created user instance: {user.__dict__}")
+            return user
         else:
             return None
 
-    @staticmethod
-    def check_password(username, password):
-        User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
-        user_data = User.cursor.fetchone()
 
-        if user_data:
-            stored_password = user_data[2] 
-            return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
-
-        return False
     
-    @staticmethod
-    def check_password(username, password):
-        User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
-        user_data = User.cursor.fetchone()
+    # @staticmethod
+    # def check_password(username, password):
+    #     User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+    #     user_data = User.cursor.fetchone()
 
-        if user_data:
-            stored_password = user_data["password"] 
-            return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
+    #     if user_data:
+    #         stored_password = user_data["password"] 
+    #         return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
 
-        return False
+    #     return False
     
     
 
