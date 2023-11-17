@@ -1,13 +1,16 @@
 # Create a virtual environment (optional)
-python -m venv venv
+python -m venv .venv
 
 # Activate the virtual environment
 
 # On Windows
-venv\Scripts\activate
+.venv\Scripts\activate
 
 # On macOS or Linux
-source venv/bin/activate
+source .venv/bin/activate
 
 # Install requirements from requiremets.txt
 pip install -r requirements.txt
+
+# Add dependencies to requirements
+pip freeze > requirements.txt
