@@ -1,5 +1,9 @@
 from connection_db import conn
 
+# import cv2
+# from PIL import Image
+# from pytesseract import pytesseract
+
 class Vehicule:
     myresult=""
     request=""
@@ -45,13 +49,7 @@ class Vehicule:
         self.cursor.execute("SELECT * FROM vehicules WHERE matricule=%s",(self.matricule))
         self.myresult = self.cursor.fetchone()
         return self.myresult
-    def get_by_user(user_id):
-        Vehicule.cursor.execute("SELECT * FROM vehicules WHERE user_id=%s",(user_id,))
-        Vehicule.myresult = Vehicule.cursor.fetchone()
-        print(Vehicule.myresult)
-        return Vehicule.myresult
-    def get_all_by_user(user_id):
-        Vehicule.cursor.execute("SELECT * FROM vehicules WHERE user_id=%s",(user_id,))
+    def get_all_by_user(id):
+        Vehicule.cursor.execute("SELECT * FROM vehicules WHERE user_id=%s",(id))
         Vehicule.myresult = Vehicule.cursor.fetchall()
-        print(Vehicule.myresult)
         return Vehicule.myresult

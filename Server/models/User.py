@@ -18,8 +18,8 @@ class User:
 
 
     def save(self):
-        hashed_password = bcrypt.hashpw(self.password.encode('utf-8'), bcrypt.gensalt())
-        self.cursor.execute("INSERT INTO `users` (`id`, `username`, `password`,`cin`,`telephone`,`email`,`role`) VALUES (NULL, %s, %s,%s,%s,%s,%s);",(self.username,hashed_password,self.cin,self.telephone,self.email,self.role))
+        # hashed_password = bcrypt.hashpw(self.password.encode('utf-8'), bcrypt.gensalt())
+        self.cursor.execute("INSERT INTO `users` (`id`, `username`, `password`,`cin`,`telephone`,`email`,`role`) VALUES (NULL, %s, %s,%s,%s,%s,%s);",(self.username,self.password,self.cin,self.telephone,self.email,self.role))
         conn.commit()
         print("User added successfully")
         return True
@@ -53,13 +53,22 @@ class User:
     def get_by_username(username):
         User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
         user_data = User.cursor.fetchone()
-        print (user_data)
         
         if user_data:
-           return User(**user_data)
-
+            return User(*user_data)
         else:
             return None
+
+    @staticmethod
+    def check_password(username, password):
+        User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+        user_data = User.cursor.fetchone()
+
+        if user_data:
+            stored_password = user_data[2] 
+            return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
+
+        return False
     
     @staticmethod
     def check_password(username, password):

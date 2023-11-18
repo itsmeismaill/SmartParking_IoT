@@ -1,13 +1,18 @@
-
-from flask import jsonify, request , session
-from flask_jwt_extended import get_jwt_identity , jwt_required
+import cv2
+# from PIL import Image
+# from pytesseract import pytesseract
+from flask import jsonify, request
+# import tesseract
 from models.Vehicule import Vehicule
-from flask import Blueprint
 from models.Abonnement import Abonnement
-from controllers.UserController import user
-
+from flask import Blueprint
 
 vehicule = Blueprint('vehicule', __name__)
+
+
+# Shared camera resource
+camera = cv2.VideoCapture(0)
+
 
 @vehicule.route('/vehicules', methods=['GET'])
 def get_all_vehicules():
@@ -42,8 +47,6 @@ def get_vehicule_by_id(id):
 
 @vehicule.route('/vehicules_users', methods=['GET'])
 def get_vehicules_users_by_id():
-  
-
     user_id=11
     print("mon id", user_id)
     
@@ -68,8 +71,6 @@ def add_vehicule():
     vehicule = Vehicule(data['id'],data['matricule'],data['abonnement_id'],data['user_id'])
     vehicule.save()
     return jsonify(vehicule.__dict__)
-
-
 
 
 @vehicule.route('/vehicules/<int:id>', methods=['PUT'], )
@@ -99,4 +100,84 @@ def get_vehicule_by_user_id(user_id):
 def get_vehicule_by_abonnement_id(abonnement_id):
     vehicule = Vehicule.get_by_abonnement_id(abonnement_id)
     return jsonify(vehicule)
+
+
+
+
+# Check by matricule a travers string matricule
+@vehicule.route('/vehicules/checkabonnement/<string:matricule>', methods=['GET'], )
+def check_matricule_abonnement(matricule):
+    vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
+    if not vehicule:
+        return "vehicule not found",401
+    
+    #GET ABONNEMENT
+    if(vehicule['abonnement_id'] is None):
+        return "vehicule has no abonnement yet",402
+
+    abonnement=Abonnement.get_by_id(Abonnement(vehicule['abonnement_id'],'',''))
+
+    if(abonnement['duree']>0):
+        return "Bariel open",200
+
+    return "Abonnement expired",403
+
+
+
+
+# Check by matricule a travers camera
+# @vehicule.route('/vehicules/checkabonnementrealtime/', methods=['GET'], )
+# def check_matricule_abonnement_realtime():
+
+    # Lire matricule a travers camera
+    # matricule = capture_and_recognize()
+    
+    # print("string is : "+matricule)
+    
+    # vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
+    # if not vehicule:
+    #     return "vehicule not found",401
+    
+    # #GET ABONNEMENT
+    # if(vehicule['abonnement_id'] is None):
+    #     return "vehicule has no abonnement yet",402
+    
+    # abonnement=Abonnement.get_by_id(Abonnement(vehicule['abonnement_id'],'',''))
+
+    # if(abonnement['duree']>0):
+    #     return "Bariel open",200
+    
+
+    # return "Abonnement expired",403
+
+
+
+
+# Fonction pour appliquer la reconnaissance et retourne le texte
+# def capture_and_recognize():
+
+#     text=""
+
+    # tentatives
+    # tentative1=""
+    # tentative2=""
+
+    # while True:
+    #     _, image = camera.read()
+    #     cv2.imshow('Text detection', image)
+
+        # Appliquer la reconnaissance de texte
+        # path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+        # tesseract.tesseract_cmd = path_to_tesseract
+        # text = pytesseract.image_to_string(Image.fromarray(image))
+
+        # print("Texte détecté : ", text[:-1]) 
+
+        # if text[:-1]:
+        #     tentative1=str(text[:-1]).replace("\n", "").replace(" ","")
+        #     if tentative1==tentative2:
+        #         return tentative1
+        #     else:
+        #         tentative2=tentative1
+        #         tentative1=""
 
