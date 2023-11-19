@@ -1,8 +1,7 @@
 import cv2
-# from PIL import Image
-# from pytesseract import pytesseract
+from PIL import Image
+from pytesseract import pytesseract
 from flask import jsonify, request
-# import tesseract
 from models.Vehicule import Vehicule
 from models.Abonnement import Abonnement
 from flask import Blueprint
@@ -126,58 +125,58 @@ def check_matricule_abonnement(matricule):
 
 
 # Check by matricule a travers camera
-# @vehicule.route('/vehicules/checkabonnementrealtime/', methods=['GET'], )
-# def check_matricule_abonnement_realtime():
+@vehicule.route('/vehicules/checkabonnementrealtime/', methods=['GET'], )
+def check_matricule_abonnement_realtime():
 
-    # Lire matricule a travers camera
-    # matricule = capture_and_recognize()
+    #Lire matricule a travers camera
+    matricule = capture_and_recognize()
     
-    # print("string is : "+matricule)
+    print("string is : "+matricule)
     
-    # vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
-    # if not vehicule:
-    #     return "vehicule not found",401
+    vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
+    if not vehicule:
+        return "vehicule not found",401
     
-    # #GET ABONNEMENT
-    # if(vehicule['abonnement_id'] is None):
-    #     return "vehicule has no abonnement yet",402
+    #GET ABONNEMENT
+    if(vehicule['abonnement_id'] is None):
+        return "vehicule has no abonnement yet",402
     
-    # abonnement=Abonnement.get_by_id(Abonnement(vehicule['abonnement_id'],'',''))
+    abonnement=Abonnement.get_by_id(Abonnement(vehicule['abonnement_id'],'',''))
 
-    # if(abonnement['duree']>0):
-    #     return "Bariel open",200
+    if(abonnement['duree']>0):
+        return "Bariel open",200
     
 
-    # return "Abonnement expired",403
+    return "Abonnement expired",403
 
 
 
 
-# Fonction pour appliquer la reconnaissance et retourne le texte
-# def capture_and_recognize():
+#Fonction pour appliquer la reconnaissance et retourne le texte
+def capture_and_recognize():
 
-#     text=""
+    text=""
 
-    # tentatives
-    # tentative1=""
-    # tentative2=""
+    #tentatives
+    tentative1=""
+    tentative2=""
 
-    # while True:
-    #     _, image = camera.read()
-    #     cv2.imshow('Text detection', image)
+    while True:
+        _, image = camera.read()
+        cv2.imshow('Text detection', image)
 
-        # Appliquer la reconnaissance de texte
-        # path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-        # tesseract.tesseract_cmd = path_to_tesseract
-        # text = pytesseract.image_to_string(Image.fromarray(image))
+        #Appliquer la reconnaissance de texte
+        path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+        pytesseract.tesseract_cmd = path_to_tesseract
+        text = pytesseract.image_to_string(Image.fromarray(image))
 
-        # print("Texte détecté : ", text[:-1]) 
+        print("Texte détecté : ", text[:-1]) 
 
-        # if text[:-1]:
-        #     tentative1=str(text[:-1]).replace("\n", "").replace(" ","")
-        #     if tentative1==tentative2:
-        #         return tentative1
-        #     else:
-        #         tentative2=tentative1
-        #         tentative1=""
+        if text[:-1]:
+            tentative1=str(text[:-1]).replace("\n", "").replace(" ","")
+            if tentative1==tentative2:
+                return tentative1
+            else:
+                tentative2=tentative1
+                tentative1=""
 
