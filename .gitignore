@@ -2,3 +2,5 @@
 Server/*/__pycache__
 Server/__pycache__
 Server/flask_session
+
+node_modules
