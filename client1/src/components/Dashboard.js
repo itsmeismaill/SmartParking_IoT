@@ -132,15 +132,15 @@ const Dashboard = () => {
         </div>
 
         <div className="w-1/3 bg-white rounded-md p-6 m-4 mb-16">
-          <h3 className="text-xl font-semibold mb-10">Camera Realtime</h3>
+          <h3 className="text-xl font-semibold mb-10 text-center">Camera Realtime</h3>
           {/* <p className="text-gray-600 text-center">Camera will be here</p> */}
           {/* <WebCam /> */}
-          <img
+          {/* <img
             src="http://localhost:5000/webcam"
             id="camera-stream"
             alt="Camera Stream"
             className="w-full h-auto"
-          />
+          /> */}
         </div>
       </div>
     </div>

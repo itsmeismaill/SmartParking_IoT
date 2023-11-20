@@ -91,7 +91,7 @@ def login():
 
 @user.route('/logout', methods=['POST'])
 def logout():
-    session.clear()
+    # session.clear()
     return jsonify({'message': 'Logout successful'})
 
 
