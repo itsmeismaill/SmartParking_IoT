@@ -89,7 +89,7 @@ def login():
         return jsonify({'message': 'Login failed'})
     
 
-@user.route('/logout', methods=['GET'])
+@user.route('/logout', methods=['POST'])
 def logout():
     session.clear()
     return jsonify({'message': 'Logout successful'})

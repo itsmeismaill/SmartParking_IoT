@@ -9,12 +9,15 @@ from pytesseract import pytesseract
 # import serial
 
 
+
 vehicule = Blueprint('vehicule', __name__)
+
+camera = cv2.VideoCapture(0)
+
 
 # arduino_serial = serial.Serial('COM4', 9600, timeout=1)
 
 # Shared camera resource
-camera = cv2.VideoCapture(0)
 
 
 # def turn_on_led(color):
@@ -149,12 +152,12 @@ def capture_and_recognize():
         if text[:-1]:
             tentative1=str(text[:-1]).replace("\n", "").replace(" ","")
             if tentative1==tentative2:
-                matriculeFormat = tentative1.split("|");
+                # matriculeFormat = tentative1.split("|");
 
                 ## EXAMPLE OF THE MATRICULE "1234|A|1"
-                if len(matriculeFormat) == 3 and tentative1.count("|") == 2 and tentative1.index("|") == 4 and tentative1.rindex("|") == 6:
-                    print("correct Format : " + matriculeFormat[1])
-                    return tentative1
+                # if len(matriculeFormat) == 3 and tentative1.count("|") == 2 and tentative1.index("|") == 4 and tentative1.rindex("|") == 6:
+                # print("correct Format : " + matriculeFormat[1])
+                return tentative1
             else:
                 tentative2=tentative1
                 tentative1=""

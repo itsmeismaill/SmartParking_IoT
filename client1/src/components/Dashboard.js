@@ -1,5 +1,8 @@
 // Dashboard.js
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import io from "socket.io-client";
+// import WebCam from "react-webcam"
+
 const usersData = [
   {
     id: 1,
@@ -22,17 +25,48 @@ const user = {
   email: "anas@gmail.com",
 };
 
+const userRole = JSON.parse(sessionStorage.getItem("user")).role;
+
 const Dashboard = () => {
+  console.log("userRole from template, ", userRole);
+
+  // useEffect(() => {
+  //   const script = document.createElement("script");
+  //   script.src =
+  //     "https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js";
+  //   script.async = true;
+  //   document.body.appendChild(script);
+
+  //   script.onload = () => {
+  //     const socket = io.connect("http://localhost:5000");
+
+  //     socket.on("connected", (msg) => {
+  //       console.log(msg);
+  //     });
+
+  //     const cameraStream = document.getElementById("camera-stream");
+
+  //     socket.on("image", (frame) => {
+  //       cameraStream.src = "data:image/jpg;base64," + frame;
+  //     });
+  //   };
+
+  //   return () => {
+  //     document.body.removeChild(script);
+  //   };
+  // }, []);
+
   return (
     <div className="container mx-auto mt-8 m-14">
       <div className="flex">
         <div className="w-2/3 bg-white rounded-md p-6 m-4">
           <h3 className="text-xl font-semibold mb-2">Parking statistic</h3>
 
-
           <div className=" flex justify-center items-center">
             <div className="bg-gray-200 rounded-md p-8 px-10 m-4 w-96 ">
-              <h3 className="text-xl font-semibold mb-2 text-center">New Vehicule</h3>
+              <h3 className="text-xl font-semibold mb-2 text-center">
+                New Vehicule
+              </h3>
               <p className="text-gray-600 font-semibold">Matricule</p>
               <p className="text-gray-600 font-semibold">Client name</p>
               <p className="text-gray-600 font-semibold">Client name</p>
@@ -97,9 +131,16 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="w-1/3 bg-white rounded-md p-6 m-4">
-          <h3 className="text-xl font-semibold mb-2">Camera Realtime</h3>
-          <p className="text-gray-600">Add Camera here</p>
+        <div className="w-1/3 bg-white rounded-md p-6 m-4 mb-16">
+          <h3 className="text-xl font-semibold mb-10">Camera Realtime</h3>
+          {/* <p className="text-gray-600 text-center">Camera will be here</p> */}
+          {/* <WebCam /> */}
+          <img
+            src="http://localhost:5000/webcam"
+            id="camera-stream"
+            alt="Camera Stream"
+            className="w-full h-auto"
+          />
         </div>
       </div>
     </div>

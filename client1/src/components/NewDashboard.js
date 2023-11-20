@@ -2,10 +2,13 @@
 import React from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { Route, Routes, Link } from 'react-router-dom';
+import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 import Dashboard from './Dashboard'; 
 import Vehicules from '../pages/Vehicules'; 
 import Users from '../pages/Users'; 
+import { Button } from '@chakra-ui/react';
+
+
 
 
 const user = {
@@ -24,14 +27,51 @@ const navigation = [
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
   { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
+  // { name: 'Sign out', href: '#' },
 ];
 
 function classNames(...classes) {
+  
   return classes.filter(Boolean).join(' ');
 }
 
+
+
+
+
 const NewDashboard = () => {
+
+  const navigate = useNavigate();
+
+
+  // const handleLogout = async () => {
+
+  //   try {
+  //       console.log("button clickee");
+  //     const response = await fetch('http://localhost:5000/logout', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+      
+  //     });
+  
+  //     if (response.ok) {
+  
+  //       sessionStorage.clear();
+  
+  //       // Redirect to "/dashboard" if user role is "admin"
+  //         navigate('/Authentification')
+  
+  //     } else {
+  //       console.error('Error connection', response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error.message);
+  //   }
+  // };
+
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Disclosure as="nav" className="bg-gray-800">
@@ -104,6 +144,19 @@ const NewDashboard = () => {
                               )}
                             </Menu.Item>
                           ))}
+                          {/* <Menu.Item>
+                              {({ active }) => (
+                                
+                              )}
+                            </Menu.Item> */}
+                            {/* <Button
+                                  className={classNames(
+                                    'block px-4 py-2 text-sm text-gray-700'
+                                  )}
+                                  onClick={handleLogout}
+                                >
+                                  Logout
+                                </Button> */}
                         </Menu.Items>
                       </Transition>
                     </Menu>

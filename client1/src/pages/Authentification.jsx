@@ -54,6 +54,8 @@ const Authentification = () => {
         // Redirect to "/dashboard" if user role is "admin"
         if (userData.user.role === 'admin') {
           navigate('/dashboard')
+        } else if(userData.user.role === 'client'){
+          navigate('/HomeClient')
         }
 
       } else {
