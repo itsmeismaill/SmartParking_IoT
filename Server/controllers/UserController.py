@@ -74,7 +74,17 @@ def login():
     print(f"Entered password: {password}")
 
     if user and bcrypt.check_password_hash(user.password, password):
-        return jsonify({'message': 'Login successful'})
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+        }
+
+        return jsonify({
+            'message': 'Login successful',
+            'user': user_data
+        })
     else:
         return jsonify({'message': 'Login failed'})
     
