@@ -21,12 +21,14 @@ const Authentification = () => {
     password: '',
   });
 
+
   const handleChange = (e, fieldName) => {
     setFormData({
       ...formData,
       [fieldName]: e.target.value,
     });
   };
+
 
   const handleSubmit = async () => {
     try {
@@ -45,8 +47,15 @@ const Authentification = () => {
 
       if (response.ok) {
         const userData = await response.json();
-        console.log('User connected', userData);
-        // Perform any additional actions on success
+        console.log("userRole", userData.user.role);
+
+        sessionStorage.setItem('user', JSON.stringify(userData.user));
+
+        // Redirect to "/dashboard" if user role is "admin"
+        if (userData.user.role === 'admin') {
+          navigate('/dashboard')
+        }
+
       } else {
         console.error('Error connection', response.statusText);
       }
