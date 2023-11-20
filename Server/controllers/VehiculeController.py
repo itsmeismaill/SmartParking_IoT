@@ -8,11 +8,23 @@ from models.Abonnement import Abonnement
 from models.TimeParking import TimeParking
 from flask import Blueprint
 
+# import serial
+
 vehicule = Blueprint('vehicule', __name__)
 
+camera = cv2.VideoCapture(0)
+
+
+# arduino_serial = serial.Serial('COM4', 9600, timeout=1)
 
 # Shared camera resource
-camera = cv2.VideoCapture(0)
+
+
+# def turn_on_led(color):
+#     if color == 'red':
+#         arduino_serial.write(b'R')
+#     elif color == 'green':
+#         arduino_serial.write(b'G')
 
 
 @vehicule.route('/vehicules', methods=['GET'])
@@ -40,6 +52,7 @@ def get_all_vehicules():
         vehicules_with_abonnement.append(vehicule_data)
 
     return jsonify(vehicules_with_abonnement)
+
 
 @vehicule.route('/vehicules/<int:id>', methods=['GET'], )
 def get_vehicule_by_id(id):
@@ -84,21 +97,25 @@ def update_vehicule(id):
     vehicule.update()
     return jsonify(vehicule)
 
+
 @vehicule.route('/vehicules/<int:id>', methods=['DELETE'], )
 def delete_vehicule(id):
     vehicule = Vehicule(id,"","","")
     vehicule.delete()
     return jsonify(vehicule)
 
-@vehicule.route('/vehicules/matricule/<string:matricule>', methods=['GET'], )
+
+@vehicule.route('/vehicules/matricule/<string:matricule>', methods=['GET'],)
 def get_vehicule_by_matricule(matricule):
     vehicule = Vehicule.get_by_matricule(matricule)
     return jsonify(vehicule)
+
 
 @vehicule.route('/vehicules/user/<int:user_id>', methods=['GET'], )
 def get_vehicule_by_user_id(user_id):
     vehicule = Vehicule.get_by_user_id(user_id)
     return jsonify(vehicule)
+
 
 @vehicule.route('/vehicules/abonnement/<int:abonnement_id>', methods=['GET'], )
 def get_vehicule_by_abonnement_id(abonnement_id):
@@ -111,10 +128,12 @@ def get_vehicule_by_abonnement_id(abonnement_id):
 def car_entred(matricule):
     vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
     if not vehicule:
+        # turn_on_led('red')
         return "vehicule not found",401
     
     #GET ABONNEMENT
     if(vehicule['abonnement_id'] is None):
+        # turn_on_led('red')
         return "vehicule has no abonnement yet",402
 
     abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
@@ -123,6 +142,7 @@ def car_entred(matricule):
         timeparking.save()
         return "Car entred successfuly",202
 
+    # turn_on_led('red')
     return "Abonnement expired",403
 
 # car go out test matricule string
@@ -163,11 +183,12 @@ def car_entred_realtime():
     matricule = capture_and_recognize()
     
     print("string is : "+matricule)
-    
+
     vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
     if not vehicule:
         return "vehicule not found",401
     
+        
     #GET ABONNEMENT
     if(vehicule['abonnement_id'] is None):
         return "vehicule has no abonnement yet",402
@@ -238,8 +259,19 @@ def capture_and_recognize():
         if text[:-1]:
             tentative1=str(text[:-1]).replace("\n", "").replace(" ","")
             if tentative1==tentative2:
+                # matriculeFormat = tentative1.split("|");
+
+                ## EXAMPLE OF THE MATRICULE "1234|A|1"
+                # if len(matriculeFormat) == 3 and tentative1.count("|") == 2 and tentative1.index("|") == 4 and tentative1.rindex("|") == 6:
+                # print("correct Format : " + matriculeFormat[1])
                 return tentative1
             else:
                 tentative2=tentative1
                 tentative1=""
 
+
+# TODO when link the rasp with arduino: Turn on the LED (Green) if the conditions of a car has satisfied totally otherwise LED (Red),
+
+# TODO: Calculate the Difference time between In and Out of the car
+
+# TODO: Check If the subscription of User finished or never

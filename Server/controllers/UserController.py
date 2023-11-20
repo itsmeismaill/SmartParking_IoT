@@ -66,19 +66,38 @@ def login():
     username = data['username']
     password = data['password']
 
-    if User.check_password(username, password):
-        MyUser = User.get_by_username(username)
-        print("MyUser_Id", MyUser.id)
-        session['user_id'] = MyUser.id
-        print("session---------------------------", session)
-        return jsonify({'message': 'Login successful'})
+    user = User.get_by_username(username)
+
+    print(f"Stored hashed password: {user.password}")
+    print(f"Entered password: {password}")
+
+    if user and bcrypt.check_password_hash(user.password, password):
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+        }
+
+        return jsonify({
+            'message': 'Login successful',
+            'user': user_data
+        })
+    
+    # if User.check_password(username, password):
+    #     MyUser = User.get_by_username(username)
+    #     print("MyUser_Id", MyUser.id)
+    #     session['user_id'] = MyUser.id
+    #     print("session---------------------------", session)
+    #     return jsonify({'message': 'Login successful'})
+    
     else:
         return jsonify({'message': 'Login failed'})
     
 
-@user.route('/logout', methods=['GET'])
+@user.route('/logout', methods=['POST'])
 def logout():
-    session.clear()
+    # session.clear()
     return jsonify({'message': 'Logout successful'})
 
 
