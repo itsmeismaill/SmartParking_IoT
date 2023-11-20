@@ -25,7 +25,12 @@ const user = {
   email: "anas@gmail.com",
 };
 
-const userRole = JSON.parse(sessionStorage.getItem("user")).role;
+let userRole;
+
+if (sessionStorage.getItem("user")) {
+  userRole = JSON.parse(sessionStorage.getItem("user")).role;
+}
+
 
 const Dashboard = () => {
   console.log("userRole from template, ", userRole);
@@ -135,12 +140,12 @@ const Dashboard = () => {
           <h3 className="text-xl font-semibold mb-10 text-center">Camera Realtime</h3>
           {/* <p className="text-gray-600 text-center">Camera will be here</p> */}
           {/* <WebCam /> */}
-          {/* <img
+          <img
             src="http://localhost:5000/webcam"
             id="camera-stream"
             alt="Camera Stream"
             className="w-full h-auto"
-          /> */}
+          />
         </div>
       </div>
     </div>

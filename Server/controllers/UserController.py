@@ -2,7 +2,11 @@
 from models.User import User
 from flask import jsonify, request
 from flask import Blueprint,session
-import bcrypt
+# import bcrypt
+
+from flask_bcrypt import Bcrypt
+
+bcrypt = Bcrypt()
 
 user = Blueprint('user', __name__)
 
