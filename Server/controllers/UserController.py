@@ -67,6 +67,10 @@ def login():
     password = data['password']
 
     if User.check_password(username, password):
+        MyUser = User.get_by_username(username)
+        print("MyUser_Id", MyUser.id)
+        session['user_id'] = MyUser.id
+        print("session---------------------------", session)
         return jsonify({'message': 'Login successful'})
     else:
         return jsonify({'message': 'Login failed'})

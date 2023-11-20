@@ -2,7 +2,7 @@ import datetime
 import cv2
 from PIL import Image
 from pytesseract import pytesseract
-from flask import jsonify, request
+from flask import jsonify, request, session
 from models.Vehicule import Vehicule
 from models.Abonnement import Abonnement
 from models.TimeParking import TimeParking
@@ -46,9 +46,12 @@ def get_vehicule_by_id(id):
     vehicule = Vehicule.get_by_id(Vehicule (id,"","",""))
     return jsonify(vehicule)
 
+
+
+
 @vehicule.route('/vehicules_users', methods=['GET'])
 def get_vehicules_users_by_id():
-    user_id=11
+    user_id = session.get("user_id")
     print("mon id", user_id)
     
     if user_id:

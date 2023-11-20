@@ -55,7 +55,7 @@ class User:
         user_data = User.cursor.fetchone()
         
         if user_data:
-            return User(*user_data)
+            return User(**user_data)
         else:
             return None
 

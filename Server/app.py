@@ -9,8 +9,9 @@ from controllers.VehiculeController import vehicule
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16)  # Générez une clé secrète unique
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config.from_object(__name__)
 Session(app)  # Assurez-vous d'utiliser la même instance de Session ici
-Session.permanent = True
 
 CORS(app, supports_credentials=True)
 app.register_blueprint(user)
