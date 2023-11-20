@@ -1,14 +1,14 @@
-
-from flask import jsonify, request
-from models.Vehicule import Vehicule
-from models.Abonnement import Abonnement
-from flask import Blueprint
+import datetime
 import cv2
 from PIL import Image
 from pytesseract import pytesseract
+from flask import jsonify, request, session
+from models.Vehicule import Vehicule
+from models.Abonnement import Abonnement
+from models.TimeParking import TimeParking
+from flask import Blueprint
+
 # import serial
-
-
 
 vehicule = Blueprint('vehicule', __name__)
 
@@ -27,16 +27,59 @@ camera = cv2.VideoCapture(0)
 #         arduino_serial.write(b'G')
 
 
-@vehicule.route('/vehicules', methods=['GET'], )
+@vehicule.route('/vehicules', methods=['GET'])
 def get_all_vehicules():
     vehicules = Vehicule.get_all()
-    return jsonify(vehicules)
+
+    # Récupérer la durée de chaque abonnement associé à chaque véhicule
+    vehicules_with_abonnement = []
+    for vehicule in vehicules:
+        if isinstance(vehicule, dict):
+            abonnement_id = vehicule.get('abonnement_id')
+        else:
+            abonnement_id = vehicule.abonnement_id
+
+        # Utiliser la méthode Abonnement.get_by_id pour récupérer l'abonnement
+        abonnement = Abonnement.get_by_id(abonnement_id)
+
+        vehicule_data = {
+            'id': vehicule.get('id') if isinstance(vehicule, dict) else vehicule.id,
+            'matricule': vehicule.get('matricule') if isinstance(vehicule, dict) else vehicule.matricule,
+            'abonnement_id': abonnement_id,
+            'user_id': vehicule.get('user_id') if isinstance(vehicule, dict) else vehicule.user_id,
+            'duree_abonnement': abonnement.get('duree') if abonnement else None
+        }
+        vehicules_with_abonnement.append(vehicule_data)
+
+    return jsonify(vehicules_with_abonnement)
 
 
 @vehicule.route('/vehicules/<int:id>', methods=['GET'], )
 def get_vehicule_by_id(id):
-    vehicule = Vehicule.get_by_id(id)
+    vehicule = Vehicule.get_by_id(Vehicule (id,"","",""))
     return jsonify(vehicule)
+
+
+
+
+@vehicule.route('/vehicules_users', methods=['GET'])
+def get_vehicules_users_by_id():
+    user_id = session.get("user_id")
+    print("mon id", user_id)
+    
+    if user_id:
+        vehicules = Vehicule.get_all_by_user(user_id)
+        print(vehicules)
+        
+        # Get subscription information for each vehicle
+        vehicule_info = []
+        for vehicule in vehicules:
+            abonnement = Abonnement.get_by_id(vehicule.get('abonnement_id'))
+            vehicule_info.append({'vehicule': vehicule, 'abonnement': abonnement})
+
+        return jsonify(vehicule_info)
+    else:
+        return jsonify({'error': 'User not authenticated'}), 401
 
 
 @vehicule.route('/vehicules', methods=['POST'], )
@@ -80,9 +123,9 @@ def get_vehicule_by_abonnement_id(abonnement_id):
     return jsonify(vehicule)
 
 
-# Check by matricule a travers string matricule
-@vehicule.route('/vehicules/checkabonnement/<string:matricule>', methods=['GET'], )
-def check_matricule_abonnement(matricule):
+# car enter test matricule string
+@vehicule.route('/vehicules/car_entred/<string:matricule>', methods=['GET'], )
+def car_entred(matricule):
     vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
     if not vehicule:
         # turn_on_led('red')
@@ -93,21 +136,50 @@ def check_matricule_abonnement(matricule):
         # turn_on_led('red')
         return "vehicule has no abonnement yet",402
 
-    abonnement=Abonnement.get_by_id(Abonnement(vehicule['abonnement_id'],'',''))
-
-    if(abonnement['duree']>0):
-        # turn_on_led('green')
-        return "Bariel open",200
+    abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
+    if(abonnement['duree']!=datetime.timedelta(hours=0, minutes=0)):
+        timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
+        timeparking.save()
+        return "Car entred successfuly",202
 
     # turn_on_led('red')
     return "Abonnement expired",403
 
+# car go out test matricule string
+@vehicule.route('/vehicules/car_go_out/<string:matricule>', methods=['GET'], )
+def car_go_out(matricule):
+    vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
+    if not vehicule:
+        return "vehicule not found",401
+    abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
+    timeparking = TimeParking.get_last_by_date_entrer(TimeParking("",vehicule["id"],None,None))[0]
 
-# Check by matricule a travers camera
-@vehicule.route('/vehicules/checkabonnementrealtime/', methods=['GET'], )
-def check_matricule_abonnement_realtime():
+    #calcul difference between two date time
+    
+    duration_seconds = int(((datetime.datetime.now())-timeparking["date_entree"]).total_seconds())
 
-    # Lire matricule a travers camera
+    # Convert duration to a time format (HH:MM:SS)
+    # formatted_duration = str(datetime.timedelta(seconds=duration_seconds))
+    
+    #new duration
+    new_duration = datetime.timedelta(seconds=abonnement["duree"].total_seconds()-duration_seconds)
+
+    # update abonnement object
+    Abonnement.update(Abonnement(abonnement["id"],new_duration,abonnement["montant"]))
+
+    # update time prking object object
+    TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
+
+
+    return "Car go out of parking",200
+
+
+
+# car enter a travers camera
+@vehicule.route('/vehicules/car_entred_realtime/', methods=['GET'], )
+def car_entred_realtime():
+
+    #Lire matricule a travers camera
     matricule = capture_and_recognize()
     
     print("string is : "+matricule)
@@ -120,21 +192,57 @@ def check_matricule_abonnement_realtime():
     #GET ABONNEMENT
     if(vehicule['abonnement_id'] is None):
         return "vehicule has no abonnement yet",402
-        
-    abonnement=Abonnement.get_by_id(Abonnement(vehicule['abonnement_id'],'',''))
 
-    if(abonnement['duree'] > 0):
-        return "Bariel open",200
-        
+    abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
+    if(abonnement['duree']!=datetime.timedelta(hours=0, minutes=0)):
+        timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
+        timeparking.save()
+        return "Car entred successfuly",202
+
     return "Abonnement expired",403
     
+# car go out a travers camera
+@vehicule.route('/vehicules/car_go_out_realtime/', methods=['GET'], )
+def car_go_out_realtime():
 
-# Fonction pour appliquer la reconnaissance et retourne le texte
+    #Lire matricule a travers camera
+    matricule = capture_and_recognize()
+    
+    print("string is : "+matricule)
+    
+    vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
+    if not vehicule:
+        return "vehicule not found",401
+    abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
+    timeparking = TimeParking.get_last_by_date_entrer(TimeParking("",vehicule["id"],None,None))[0]
+
+    #calcul difference between two date time
+    
+    duration_seconds = int(((datetime.datetime.now())-timeparking["date_entree"]).total_seconds())
+
+    # Convert duration to a time format (HH:MM:SS)
+    # formatted_duration = str(datetime.timedelta(seconds=duration_seconds))
+    
+    #new duration
+    new_duration = datetime.timedelta(seconds=abonnement["duree"].total_seconds()-duration_seconds)
+
+    # update abonnement object
+    Abonnement.update(Abonnement(abonnement["id"],new_duration,abonnement["montant"]))
+
+    # update time prking object object
+    TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
+
+
+    return "Car go out of parking",200
+
+
+
+#Fonction pour appliquer la reconnaissance et retourne le texte
 def capture_and_recognize():
 
     text=""
 
-    # tentatives
+    #tentatives
     tentative1=""
     tentative2=""
 
@@ -142,13 +250,12 @@ def capture_and_recognize():
         _, image = camera.read()
         cv2.imshow('Text detection', image)
 
-        # Appliquer la reconnaissance de texte
+        #Appliquer la reconnaissance de texte
         path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
         pytesseract.tesseract_cmd = path_to_tesseract
         text = pytesseract.image_to_string(Image.fromarray(image))
 
         print("Texte détecté : ", text[:-1]) 
-
         if text[:-1]:
             tentative1=str(text[:-1]).replace("\n", "").replace(" ","")
             if tentative1==tentative2:

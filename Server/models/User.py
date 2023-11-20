@@ -54,36 +54,32 @@ class User:
         User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
         user_data = User.cursor.fetchone()
         
-        print(f"Retrieved user data: {user_data}")
-
         if user_data:
-            user = User(
-                user_data['id'],
-                user_data['username'],
-                user_data['cin'],
-                user_data['telephone'],
-                user_data['password'],
-                user_data['email'],
-                user_data['role']
-            )
-
-            print(f"Created user instance: {user.__dict__}")
-            return user
+            return User(**user_data)
         else:
             return None
 
+    @staticmethod
+    def check_password(username, password):
+        User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+        user_data = User.cursor.fetchone()
 
+        if user_data:
+            stored_password = user_data[2] 
+            return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
+
+        return False
     
-    # @staticmethod
-    # def check_password(username, password):
-    #     User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
-    #     user_data = User.cursor.fetchone()
+    @staticmethod
+    def check_password(username, password):
+        User.cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+        user_data = User.cursor.fetchone()
 
-    #     if user_data:
-    #         stored_password = user_data["password"] 
-    #         return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
+        if user_data:
+            stored_password = user_data["password"] 
+            return bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8'))
 
-    #     return False
+        return False
     
     
 

@@ -5,6 +5,7 @@ import Authentification from './pages/Authentification';
 import SignUp from './pages/SignUp';
 import { ChakraProvider } from '@chakra-ui/react'
 import Landing from './pages/Landing';
+import HomeClient from './pages/HomeClient';
 
 import NewDashboard from './components/NewDashboard'; 
 
@@ -14,6 +15,7 @@ const App = () => {
     <ChakraProvider>
     <Router>
       <Routes>
+        <Route path="/HomeClient" element={<HomeClient />} />
         <Route path="/Authentification" element={<Authentification />} />
         <Route path="/SignUp" element={<SignUp/>} />
         <Route path="/" element={<Landing/>} />

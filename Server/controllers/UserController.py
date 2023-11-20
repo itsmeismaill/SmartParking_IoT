@@ -1,13 +1,11 @@
+
 from models.User import User
 from flask import jsonify, request
 from flask import Blueprint,session
-# import bcrypt
-
-from flask_bcrypt import Bcrypt
+import bcrypt
 
 user = Blueprint('user', __name__)
 
-bcrypt = Bcrypt()
 
 @user.route('/users', methods=['GET'], )
 def get_all_users():
@@ -85,6 +83,14 @@ def login():
             'message': 'Login successful',
             'user': user_data
         })
+    
+    # if User.check_password(username, password):
+    #     MyUser = User.get_by_username(username)
+    #     print("MyUser_Id", MyUser.id)
+    #     session['user_id'] = MyUser.id
+    #     print("session---------------------------", session)
+    #     return jsonify({'message': 'Login successful'})
+    
     else:
         return jsonify({'message': 'Login failed'})
     
