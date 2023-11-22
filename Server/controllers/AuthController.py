@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, session, redirect, url_for
+from flask import Blueprint, jsonify, request, redirect, url_for
 from models.User import User
 
 auth = Blueprint('auth', __name__)
@@ -28,7 +28,6 @@ def login():
     password = data['password']
 
     if User.check_password(username, password):
-        session['username'] = username
         return jsonify({'message': 'Login successful'})
     else:
         return jsonify({'message': 'Login failed'})
@@ -36,5 +35,4 @@ def login():
 
 @auth.route('/logout', methods=['GET'])
 def logout():
-    session.clear()
     return jsonify({'message': 'Logout successful'})

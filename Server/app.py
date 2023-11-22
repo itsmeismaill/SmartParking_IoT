@@ -15,13 +15,9 @@ from threading import Thread
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_hex(16)  # Générez une clé secrète unique
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_COOKIE_SECURE'] = True
-app.config.from_object(__name__)
-Session(app)  # Assurez-vous d'utiliser la même instance de Session ici
 
-CORS(app, supports_credentials=True)
+CORS(app)
+
 app.register_blueprint(user)
 app.register_blueprint(abonnement)
 app.register_blueprint(vehicule)
@@ -31,7 +27,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 camera = cv2.VideoCapture(0)
 
 def webcam():
-    camera = cv2.VideoCapture(0)
+    # camera = cv2.VideoCapture(0)
 
     while True:
         success, frame = camera.read()
