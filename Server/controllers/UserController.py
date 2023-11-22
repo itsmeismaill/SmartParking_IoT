@@ -26,7 +26,7 @@ def add_user():
     try:
         data = request.get_json()
 
-        required_fields = ['id', 'username', 'cin', 'telephone', 'password', 'email', 'role']
+        required_fields = ['username', 'cin', 'telephone', 'password', 'email']
         for field in required_fields:
             if field not in data:
                 raise ValueError(f"Missing required field: {field}")
@@ -34,22 +34,21 @@ def add_user():
         hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
 
         user = User(
-            data['id'],
-            data['username'],
-            data['cin'],
-            data['telephone'],
-            hashed_password,
-            data['email'],
-            data['role']
+            id=0,
+            username=data['username'],
+            cin=data['cin'],
+            telephone=data['telephone'],
+            password=hashed_password,
+            email=data['email'],
+            role="client"
         )
+
         user.save()
 
-        return jsonify({
-            'message': 'User added successfully',
-            "data": user.__dict__
-        })
+        return jsonify({'message': 'User created successfully'})
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
 
 @user.route('/users/<int:id>', methods=['PUT'], )
 def update_user(id):

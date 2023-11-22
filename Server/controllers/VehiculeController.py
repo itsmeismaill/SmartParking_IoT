@@ -31,7 +31,6 @@ camera = cv2.VideoCapture(0)
 def get_all_vehicules():
     vehicules = Vehicule.get_all()
 
-    # Récupérer la durée de chaque abonnement associé à chaque véhicule
     vehicules_with_abonnement = []
     for vehicule in vehicules:
         if isinstance(vehicule, dict):
@@ -39,7 +38,6 @@ def get_all_vehicules():
         else:
             abonnement_id = vehicule.abonnement_id
 
-        # Utiliser la méthode Abonnement.get_by_id pour récupérer l'abonnement
         abonnement = Abonnement.get_by_id(abonnement_id)
 
         vehicule_data = {

@@ -11,7 +11,7 @@ const HomeClient = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/vehicules_users', { withCredentials: true }) 
+    axios.get('http://localhost:5000/vehicules_users/', { withCredentials: true }) 
       .then(response => {
         console.log(response); // Log the entire response
         // Assuming response.data is an array of objects with 'abonnement' and 'vehicule' properties
