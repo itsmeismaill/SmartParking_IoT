@@ -3,31 +3,31 @@ import React, { useState, useEffect } from 'react';
 import { Table, Tbody, Td, Th, Thead, Tr, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton } from '@chakra-ui/react';
 import axios from 'axios';
 import NavBar from '../base/navbar';
+import { useNavigate } from 'react-router-dom';
 
 const HomeClient = () => {
-  const [vehicules, setVehicules] = useState([]);
-  const [abonnements, setAbonnements] = useState([]);
-  const [selectedVehicule, setSelectedVehicule] = useState(null);
+  const [selectedData, setSelectedData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [data, setData] = useState([]);
+  const isLogged = sessionStorage.getItem('user')!=null
 
   useEffect(() => {
-    axios.get('http://localhost:5000/vehicules_users', { withCredentials: true }) 
+    axios.get('http://localhost:5000/vehicules_users/'+JSON.parse(sessionStorage.getItem("user"))?.id) 
       .then(response => {
-        console.log(response); // Log the entire response
-        // Assuming response.data is an array of objects with 'abonnement' and 'vehicule' properties
-        setVehicules(response.data.map(entry => entry.vehicule) || []);
-        setAbonnements(response.data.map(entry => entry.abonnement) || []);
+        console.log(response);
+    
+        setData(response.data.map(entry => entry) || [])
       })
       .catch(error => console.error('Erreur de récupération des véhicules', error));
   }, []);
 
-  const openModal = (vehicule) => {
-    setSelectedVehicule(vehicule);
+  const openModal = (data) => {
+    setSelectedData(data);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    setSelectedVehicule(null);
+    setSelectedData(null);
     setIsModalOpen(false);
   };
 
@@ -45,40 +45,54 @@ const HomeClient = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {Array.isArray(vehicules) && vehicules.map(vehicule => (
-            <Tr key={vehicule.id}>
-              <Td textAlign="center">{vehicule?.matricule}</Td>
-              <Td textAlign="center">{vehicule?.abonnement_id}</Td>
-              <Td textAlign="center">{abonnements.find(abonnement => abonnement.id === vehicule?.abonnement_id)?.duree || ''}</Td>
+          {Array.isArray(data) && data.map(element => (
+            <>
+            <Tr key={element.vehicule.id}>
+              <Td textAlign="center">{element.vehicule?.matricule}</Td>
+              <Td textAlign="center">{element.vehicule?.abonnement_id}</Td>
+              <Td textAlign="center">{element.abonnement.duree || ''}</Td>
               <Td textAlign="center">
-                <Button onClick={() => openModal(vehicule)}>Show Details</Button>
+                <Button onClick={() => openModal(element)}>Show Details</Button>
               </Td>
             </Tr>
+    </>
           ))}
         </Tbody>
       </Table>
-
       {/* Modal for showing details */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Details</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {/* Display details of selectedVehicule here */}
-            {selectedVehicule && (
-              <div>
-                <p>Matricule: {selectedVehicule.matricule}</p>
-                <p>Abonnement ID: {selectedVehicule.abonnement_id}</p>
-                <p>Durée de l'abonnement: {selectedVehicule.abonnement ? selectedVehicule.abonnement.duree : ''}</p>
-              </div>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={closeModal}>Close</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <ModalOverlay />
+      <ModalContent style={{ width: "100%", maxWidth: "900px" }}>
+        <ModalHeader>Details</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          {/* Display details of selectedVehicule here */}
+         
+         {selectedData && <Table variant="simple">
+         <Thead>
+           <Tr>
+             <Th textAlign="center">Entry Date</Th>
+             <Th textAlign="center">Exit Date</Th>
+             <Th textAlign="center">Parking Duration</Th>
+           </Tr>
+         </Thead>
+         <Tbody>
+           {Array.isArray(selectedData.time_parking) && selectedData.time_parking.map(time => (
+             <Tr>
+               <Td textAlign="center">{time.date_entree}</Td>
+               <Td textAlign="center">{time.date_sortie}</Td>
+               <Td textAlign="center">{time.difference}</Td>
+             </Tr>
+           ))}
+         </Tbody>
+       </Table>}
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={closeModal}>Close</Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+ 
       </div>
     </div>
   );
