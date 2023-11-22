@@ -44,7 +44,7 @@ class TimeParking:
     
     def get_by_vehicule_id(self):
         self.cursor.execute("SELECT * FROM time_parking WHERE vehicule_id=%s",(self.vehicule_id))
-        self.myresult = self.cursor.fetchone()
+        self.myresult = self.cursor.fetchall()
         return self.myresult
     
     def get_last_by_date_entrer(self, num_records=1):
