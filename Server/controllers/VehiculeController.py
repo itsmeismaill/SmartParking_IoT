@@ -31,7 +31,6 @@ camera = cv2.VideoCapture(0)
 def get_all_vehicules():
     vehicules = Vehicule.get_all()
 
-    # Récupérer la durée de chaque abonnement associé à chaque véhicule
     vehicules_with_abonnement = []
     for vehicule in vehicules:
         if isinstance(vehicule, dict):
@@ -39,7 +38,6 @@ def get_all_vehicules():
         else:
             abonnement_id = vehicule.abonnement_id
 
-        # Utiliser la méthode Abonnement.get_by_id pour récupérer l'abonnement
         abonnement = Abonnement.get_by_id(abonnement_id)
 
         vehicule_data = {
@@ -54,16 +52,29 @@ def get_all_vehicules():
     return jsonify(vehicules_with_abonnement)
 
 
+@vehicule.route('/vehiculesUsers', methods=['GET'])
+def get_all_vehicules_users():
+    vehicules = Vehicule.get_all()
+    print("vehicules, ", vehicules);
+    return jsonify(vehicules)
+
 @vehicule.route('/vehicules/<int:id>', methods=['GET'], )
 def get_vehicule_by_id(id):
     vehicule = Vehicule.get_by_id(Vehicule (id,"","",""))
     return jsonify(vehicule)
 
 
+# <<<<<<< HEAD
+# @vehicule.route('/vehicules_users', methods=['GET'])
+# def get_vehicules_users_by_id():
+#     user_id = session.get("user_id")
+#     print("mon id", user_id)
+# =======
 
 
 @vehicule.route('/vehicules_users/<int:userId>', methods=['GET'])
 def get_vehicules_users_by_id(userId):
+# >>>>>>> main
     
     if userId:
         vehicules = Vehicule.get_all_by_user(userId)
@@ -95,7 +106,7 @@ def get_vehicules_users_by_id(userId):
 @vehicule.route('/vehicules', methods=['POST'], )
 def add_vehicule():
     data = request.get_json()
-    vehicule = Vehicule(data['id'],data['matricule'],data['abonnement_id'],data['user_id'])
+    vehicule = Vehicule(0, data['matricule'], data['abonnementId'], 6)
     vehicule.save()
     return jsonify(vehicule.__dict__)
 

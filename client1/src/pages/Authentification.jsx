@@ -49,7 +49,7 @@ const Authentification = () => {
         const userData = await response.json();
         console.log("userRole", userData.user.role);
 
-        sessionStorage.setItem('user', JSON.stringify(userData.user));
+        if(userData?.user) sessionStorage.setItem('user', JSON.stringify(userData.user));
 
         // Redirect to "/dashboard" if user role is "admin"
         if (userData.user.role === 'admin') {
