@@ -22,7 +22,7 @@ class Vehicule:
         return True
     
     def update(self):
-        self.cursor.execute("UPDATE `vehicules` SET `matricule` = %s, `abonnement_id` = %s, `user_id` = %s WHERE `vehicules`.`id` = %s;",(self.matricule,self.abonnement_id,self.user_id,self.id))
+        self.cursor.execute("UPDATE `vehicules` SET `matricule` = %s, `abonnement_id` = %d, `user_id` = %s WHERE `vehicules`.`id` = %s;",(self.matricule,int(self.abonnement_id),self.user_id,self.id))
         conn.commit()
         print("Vehicule updated successfully")
         return True

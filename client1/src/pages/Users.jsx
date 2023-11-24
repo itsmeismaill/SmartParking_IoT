@@ -14,7 +14,7 @@ const Users = () => {
   });
 
   useEffect(() => {
-    axios("http://localhost:5000/users")
+    axios("http://localhost:5000/users", { withCredentials: true })
       .then((response) => {
         console.log("userData: ", response.data);
         setUserData(response.data);
@@ -44,7 +44,7 @@ const Users = () => {
     // Implement the logic for creating a user with newUserData
 
     console.log("Create User Logic", newUserData);
-    axios.post("http://localhost:5000/users", newUserData).then((response) => {
+    axios.post("http://localhost:5000/users", newUserData, { withCredentials: true }).then((response) => {
       console.log(response.data);
     });
 
@@ -55,7 +55,7 @@ const Users = () => {
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg m-8 p-4 bg-gray-100 dark:bg-gray-800">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-          User Management
+          Client Management
         </h2>
         <button
           className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
