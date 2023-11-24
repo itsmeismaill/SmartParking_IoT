@@ -51,7 +51,7 @@ class Abonnement:
         return Abonnement.myresult
     
     def get_by_id(id):
-        Abonnement.cursor.execute("SELECT * FROM abonnements WHERE id=%s",(id))
+        Abonnement.cursor.execute("SELECT * FROM abonnements WHERE id=%s",str(id))
         Abonnement.myresult = Abonnement.cursor.fetchone()
         return Abonnement.myresult
     

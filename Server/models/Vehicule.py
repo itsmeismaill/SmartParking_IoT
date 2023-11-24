@@ -50,6 +50,7 @@ class Vehicule:
         self.myresult = self.cursor.fetchone()
         return self.myresult
     def get_all_by_user(id):
+        print("SELECT * FROM vehicules WHERE user_id=%s",(id))
         Vehicule.cursor.execute("SELECT * FROM vehicules WHERE user_id=%s",(id))
         Vehicule.myresult = Vehicule.cursor.fetchall()
         return Vehicule.myresult
