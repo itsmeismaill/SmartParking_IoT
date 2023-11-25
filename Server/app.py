@@ -33,6 +33,17 @@ app.register_blueprint(vehicule)
 
 camera = cv2.VideoCapture(0)
 
+import serial
+import time
+
+# Ardiuno
+arduino_port = 'COM10'
+ser = serial.Serial(arduino_port, baudrate=9600, timeout=1)
+
+
+
+
+
 
 def webcam():
     camera = cv2.VideoCapture(0)
@@ -122,12 +133,18 @@ def webcam():
                                     print("------------------------------------")
                                     print("#      Car entred successfuly      #")
                                     print("------------------------------------")
-                                    time.sleep(10)
+                                    # Turn on green LED (pin 7) for 10 seconds
+                                    ser.write('2'.encode())
+                                    time.sleep(5)
                                 else:
                                     print("------------------------------------")
                                     print("#        Abonnement expired        #")
                                     print("------------------------------------")
-                                    time.sleep(10)
+                                    # Turn on red LED (pin 8) for 10 seconds
+                                    # Turn on red LED for 5 seconds
+                                    ser.write('1'.encode())
+                                    time.sleep(5)
+
                 else:
                     tentative2 = tentative1
                     tentative1 = ""
