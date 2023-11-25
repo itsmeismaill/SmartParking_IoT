@@ -17,7 +17,7 @@ from models.User import User
 
 vehicule = Blueprint('vehicule', __name__)
 
-camera = cv2.VideoCapture(0)
+# camera = cv2.VideoCapture(0)
 
 
 # arduino_serial = serial.Serial('COM4', 9600, timeout=1)
@@ -175,7 +175,7 @@ def car_entred(matricule):
         return "vehicule has no abonnement yet",402
 
     abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
-    if(abonnement['duree']!=datetime.timedelta(hours=0, minutes=0)):
+    if(abonnement['duree']>0):
         timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
         timeparking.save()
         return "Car entred successfuly",202
@@ -184,8 +184,8 @@ def car_entred(matricule):
     return "Abonnement expired",403
 
 # car go out test matricule string
-@vehicule.route('/vehicules/car_go_out/<string:matricule>', methods=['GET'], )
-def car_go_out(matricule):
+@vehicule.route('/vehicules/car_exit/<string:matricule>', methods=['GET'], )
+def car_exit(matricule):
     vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
     if not vehicule:
         return "vehicule not found",401
@@ -195,15 +195,15 @@ def car_go_out(matricule):
     #calcul difference between two date time
     
     duration_seconds = int(((datetime.datetime.now())-timeparking["date_entree"]).total_seconds())
-
     # Convert duration to a time format (HH:MM:SS)
     # formatted_duration = str(datetime.timedelta(seconds=duration_seconds))
-    
+    print(type(duration_seconds))
+    print(duration_seconds)
     #new duration
-    new_duration = datetime.timedelta(seconds=abonnement["duree"].total_seconds()-duration_seconds)
-
+    new_duration = duration_seconds//60
+    print(abonnement["duree"]-new_duration)
     # update abonnement object
-    Abonnement.update(Abonnement(abonnement["id"],new_duration,abonnement["montant"]))
+    Abonnement.update(Abonnement(abonnement["id"],abonnement["duree"]-new_duration,abonnement["montant"]))
 
     # update time prking object object
     TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
@@ -221,104 +221,138 @@ def car_go_out(matricule):
     return "Car go out of parking",200
 
 
-
-# car enter a travers camera
-@vehicule.route('/vehicules/car_entred_realtime/', methods=['GET'], )
-def car_entred_realtime():
-
-    #Lire matricule a travers camera
-    matricule = capture_and_recognize()
-    
-    print("string is : "+matricule)
-
-    vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
-    if not vehicule:
-        return "vehicule not found",401
-    
-        
-    #GET ABONNEMENT
-    if(vehicule['abonnement_id'] is None):
-        return "vehicule has no abonnement yet",402
-
-    abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
-    if(abonnement['duree']!=datetime.timedelta(hours=0, minutes=0)):
-        timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
-        timeparking.save()
-        
-        socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparking})
-
-        return "Car entred successfuly",202
-
-    return "Abonnement expired",403
-    
-# car go out a travers camera
-@vehicule.route('/vehicules/car_go_out_realtime/', methods=['GET'], )
-def car_go_out_realtime():
-
-    #Lire matricule a travers camera
-    matricule = capture_and_recognize()
-    
-    print("string is : "+matricule)
-    
+# car even in or out matricule string
+@vehicule.route('/vehicules/car_in_out/<string:matricule>', methods=['GET'], )
+def car_in_out(matricule):
     vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
     if not vehicule:
         return "vehicule not found",401
     abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
     timeparking = TimeParking.get_last_by_date_entrer(TimeParking("",vehicule["id"],None,None))[0]
 
-    #calcul difference between two date time
+    if(timeparking['date_sortie'] is None):
+        #calcul difference between two date time
+        duration_seconds = int(((datetime.datetime.now())-timeparking["date_entree"]).total_seconds())
+        # Convert duration to a time format (HH:MM:SS)
+        # formatted_duration = str(datetime.timedelta(seconds=duration_seconds))
+        print(type(duration_seconds))
+        print(duration_seconds)
+        #new duration
+        new_duration = duration_seconds//60
+        print(abonnement["duree"]-new_duration)
+        # update abonnement object
+        Abonnement.update(Abonnement(abonnement["id"],abonnement["duree"]-new_duration,abonnement["montant"]))
+
+        # update time prking object object
+        TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
+
+        
+        return "Car go out of parking",200
+    else:
+        #GET ABONNEMENT
+        if(vehicule['abonnement_id'] is None):
+            # turn_on_led('red')
+            return "vehicule has no abonnement yet",402
+
+        abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
+        if(abonnement['duree']>0):
+            timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
+            timeparking.save()
+            return "Car entred successfuly",202
+
+        # turn_on_led('red')
+        return "Abonnement expired",403
+
     
-    duration_seconds = int(((datetime.datetime.now())-timeparking["date_entree"]).total_seconds())
 
-    # Convert duration to a time format (HH:MM:SS)
-    # formatted_duration = str(datetime.timedelta(seconds=duration_seconds))
+# # car enter a travers camera
+# @vehicule.route('/vehicules/car_entred_realtime/', methods=['GET'], )
+# def car_entred_realtime():
+
+#     #Lire matricule a travers camera
+#     matricule = capture_and_recognize()
     
-    #new duration
-    new_duration = datetime.timedelta(seconds=abonnement["duree"].total_seconds()-duration_seconds)
+#     print("string is : "+matricule)
 
-    # update abonnement object
-    Abonnement.update(Abonnement(abonnement["id"],new_duration,abonnement["montant"]))
+#     vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
+#     if not vehicule:
+#         return "vehicule not found",401
+    
+        
+#     #GET ABONNEMENT
+#     if(vehicule['abonnement_id'] is None):
+#         return "vehicule has no abonnement yet",402
 
-    # update time prking object object
-    TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
+#     return "Abonnement expired",403
+    
+# # car go out a travers camera
+# @vehicule.route('/vehicules/car_go_out_realtime/', methods=['GET'], )
+# def car_go_out_realtime():
 
-    socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparkingData})
+#     #Lire matricule a travers camera
+#     matricule = capture_and_recognize()
+    
+#     print("string is : "+matricule)
+    
+#     vehicule = Vehicule.get_by_matricule(Vehicule("",matricule,"",""))
+#     if not vehicule:
+#         return "vehicule not found",401
+#     abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
+#     timeparking = TimeParking.get_last_by_date_entrer(TimeParking("",vehicule["id"],None,None))[0]
 
-    return "Car go out of parking",200
+#     #calcul difference between two date time
+    
+#     duration_seconds = int(((datetime.datetime.now())-timeparking["date_entree"]).total_seconds())
+
+#     # Convert duration to a time format (HH:MM:SS)
+#     # formatted_duration = str(datetime.timedelta(seconds=duration_seconds))
+    
+#     #new duration
+#     new_duration = datetime.timedelta(seconds=abonnement["duree"].total_seconds()-duration_seconds)
+
+#     # update abonnement object
+#     Abonnement.update(Abonnement(abonnement["id"],new_duration,abonnement["montant"]))
+
+#     # update time prking object object
+#     TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
+
+#     socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparkingData})
+
+#     return "Car go out of parking",200
 
 
 
-#Fonction pour appliquer la reconnaissance et retourne le texte
-def capture_and_recognize():
+# #Fonction pour appliquer la reconnaissance et retourne le texte
+# def capture_and_recognize():
 
-    text=""
+#     text=""
 
-    #tentatives
-    tentative1=""
-    tentative2=""
+#     #tentatives
+#     tentative1=""
+#     tentative2=""
 
-    while True:
-        _, image = camera.read()
-        cv2.imshow('Text detection', image)
+#     while True:
+#         _, image = camera.read()
+#         cv2.imshow('Text detection', image)
 
-        #Appliquer la reconnaissance de texte
-        path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-        pytesseract.tesseract_cmd = path_to_tesseract
-        text = pytesseract.image_to_string(Image.fromarray(image))
+#         #Appliquer la reconnaissance de texte
+#         path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+#         pytesseract.tesseract_cmd = path_to_tesseract
+#         text = pytesseract.image_to_string(Image.fromarray(image))
 
-        print("Texte détecté : ", text[:-1]) 
-        if text[:-1]:
-            tentative1=str(text[:-1]).replace("\n", "").replace(" ","")
-            if tentative1==tentative2:
-                # matriculeFormat = tentative1.split("|");
+#         print("Texte détecté : ", text[:-1]) 
+#         if text[:-1]:
+#             tentative1=str(text[:-1]).replace("\n", "").replace(" ","")
+#             if tentative1==tentative2:
+#                 # matriculeFormat = tentative1.split("|");
 
-                ## EXAMPLE OF THE MATRICULE "1234|A|1"
-                # if len(matriculeFormat) == 3 and tentative1.count("|") == 2 and tentative1.index("|") == 4 and tentative1.rindex("|") == 6:
-                # print("correct Format : " + matriculeFormat[1])
-                return tentative1
-            else:
-                tentative2=tentative1
-                tentative1=""
+#                 ## EXAMPLE OF THE MATRICULE "1234|A|1"
+#                 # if len(matriculeFormat) == 3 and tentative1.count("|") == 2 and tentative1.index("|") == 4 and tentative1.rindex("|") == 6:
+#                 # print("correct Format : " + matriculeFormat[1])
+#                 return tentative1
+#             else:
+#                 tentative2=tentative1
+#                 tentative1=""
 
 
 # TODO when link the rasp with arduino: Turn on the LED (Green) if the conditions of a car has satisfied totally otherwise LED (Red),

@@ -46,6 +46,8 @@ const Vehicules = () => {
     const abonnementData = {
       duree: newVehiculeData.duree,
       montant: newVehiculeData.montant,
+      inital_duree: newVehiculeData.duree,
+
     };
 
     // console.log("abonnementData, ", abonnementData);
