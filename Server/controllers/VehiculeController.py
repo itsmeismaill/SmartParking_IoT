@@ -8,6 +8,11 @@ from models.Abonnement import Abonnement
 from models.TimeParking import TimeParking
 from flask import Blueprint
 
+from flask_socketio import emit
+from common import socketio
+
+from models.User import User
+
 # import serial
 
 vehicule = Blueprint('vehicule', __name__)
@@ -40,11 +45,18 @@ def get_all_vehicules():
 
         abonnement = Abonnement.get_by_id(abonnement_id)
 
+        userId = vehicule.get('user_id') if isinstance(vehicule, dict) else vehicule.user_id;
+
+        userData = User.get_by_id(User (userId,"","","","","",""))
+        print("userData, ", userData)
+
+
         vehicule_data = {
             'id': vehicule.get('id') if isinstance(vehicule, dict) else vehicule.id,
             'matricule': vehicule.get('matricule') if isinstance(vehicule, dict) else vehicule.matricule,
             'abonnement_id': abonnement_id,
-            'user_id': vehicule.get('user_id') if isinstance(vehicule, dict) else vehicule.user_id,
+            'user_id': userId,
+            'username': userData.get("username"),
             'duree_abonnement': abonnement.get('duree') if abonnement else None
         }
         vehicules_with_abonnement.append(vehicule_data)
@@ -61,6 +73,11 @@ def get_all_vehicules_users():
 @vehicule.route('/vehicules/<int:id>', methods=['GET'], )
 def get_vehicule_by_id(id):
     vehicule = Vehicule.get_by_id(Vehicule (id,"","",""))
+
+    print(vehicule)
+
+
+    socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': vehicule})
     return jsonify(vehicule)
 
 
@@ -191,6 +208,15 @@ def car_exit(matricule):
     # update time prking object object
     TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
 
+    timeparkingData = {
+        'id': timeparking['id'],
+        'vehicule_id': timeparking['vehicule_id'],
+        'date_entree': timeparking['date_entree'],
+        'date_sortie': datetime.datetime.now()
+    }
+
+    socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparkingData})
+
 
     return "Car go out of parking",200
 
@@ -257,12 +283,6 @@ def car_in_out(matricule):
 #     if(vehicule['abonnement_id'] is None):
 #         return "vehicule has no abonnement yet",402
 
-#     abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
-#     if(abonnement['duree']!=datetime.timedelta(hours=0, minutes=0)):
-#         timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
-#         timeparking.save()
-#         return "Car entred successfuly",202
-
 #     return "Abonnement expired",403
     
 # # car go out a travers camera
@@ -296,6 +316,7 @@ def car_in_out(matricule):
 #     # update time prking object object
 #     TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
 
+#     socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparkingData})
 
 #     return "Car go out of parking",200
 
