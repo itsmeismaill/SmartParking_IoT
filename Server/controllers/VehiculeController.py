@@ -8,6 +8,9 @@ from models.Abonnement import Abonnement
 from models.TimeParking import TimeParking
 from flask import Blueprint
 
+from flask_socketio import emit
+from common import socketio
+
 # import serial
 
 vehicule = Blueprint('vehicule', __name__)
@@ -61,6 +64,11 @@ def get_all_vehicules_users():
 @vehicule.route('/vehicules/<int:id>', methods=['GET'], )
 def get_vehicule_by_id(id):
     vehicule = Vehicule.get_by_id(Vehicule (id,"","",""))
+
+    print(vehicule)
+
+
+    socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': vehicule})
     return jsonify(vehicule)
 
 
@@ -191,6 +199,15 @@ def car_go_out(matricule):
     # update time prking object object
     TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
 
+    timeparkingData = {
+        'id': timeparking['id'],
+        'vehicule_id': timeparking['vehicule_id'],
+        'date_entree': timeparking['date_entree'],
+        'date_sortie': datetime.datetime.now()
+    }
+
+    socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparkingData})
+
 
     return "Car go out of parking",200
 
@@ -218,6 +235,9 @@ def car_entred_realtime():
     if(abonnement['duree']!=datetime.timedelta(hours=0, minutes=0)):
         timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
         timeparking.save()
+        
+        socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparking})
+
         return "Car entred successfuly",202
 
     return "Abonnement expired",403
@@ -253,6 +273,7 @@ def car_go_out_realtime():
     # update time prking object object
     TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
 
+    socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparkingData})
 
     return "Car go out of parking",200
 

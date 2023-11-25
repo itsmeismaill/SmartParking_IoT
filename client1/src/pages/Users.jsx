@@ -14,7 +14,10 @@ const Users = () => {
   });
 
   useEffect(() => {
-    axios("http://localhost:5000/users", { withCredentials: true })
+    axios(
+      "http://localhost:5000/users"
+      //  { withCredentials: true }
+    )
       .then((response) => {
         console.log("userData: ", response.data);
         setUserData(response.data);
@@ -44,9 +47,17 @@ const Users = () => {
     // Implement the logic for creating a user with newUserData
 
     console.log("Create User Logic", newUserData);
-    axios.post("http://localhost:5000/users", newUserData, { withCredentials: true }).then((response) => {
-      console.log(response.data);
-    });
+    axios
+      .post(
+        "http://localhost:5000/users",
+        newUserData
+        //  {
+        //   withCredentials: true,
+        // }
+      )
+      .then((response) => {
+        console.log(response.data);
+      });
 
     closeModal();
   };

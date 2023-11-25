@@ -8,13 +8,14 @@ from controllers.UserController import user
 from controllers.AbonnementController import abonnement
 from controllers.VehiculeController import vehicule
 
-from flask_socketio import SocketIO
+# from flask_socketio import SocketIO
 import cv2
 import base64
 from threading import Thread
 
+from common import app, socketio
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 CORS(app)
 
@@ -22,7 +23,7 @@ app.register_blueprint(user)
 app.register_blueprint(abonnement)
 app.register_blueprint(vehicule)
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+# socketio = SocketIO(app, cors_allowed_origins="*")
 
 camera = cv2.VideoCapture(0)
 
