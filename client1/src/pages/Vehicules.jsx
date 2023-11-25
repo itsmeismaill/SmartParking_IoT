@@ -8,12 +8,13 @@ const Vehicules = () => {
     matricule: "",
     duree: "",
     montant: "",
-    // userId: "",
+    username: "",
     abonnementId: "",
   });
 
   useEffect(() => {
-    axios.get("http://localhost:5000/vehicules", { withCredentials: true })
+    axios
+      .get("http://localhost:5000/vehicules")
       .then((response) => {
         console.log("vehicules: ", response.data);
         setVehiculeData(response.data);
@@ -50,9 +51,13 @@ const Vehicules = () => {
     // console.log("abonnementData, ", abonnementData);
 
     axios
-      .post("http://localhost:5000/abonnements", abonnementData, {
-        withCredentials: true,
-      })
+      .post(
+        "http://localhost:5000/abonnements",
+        abonnementData
+        //  {
+        //   withCredentials: true,
+        // }
+      )
       .then((response) => {
         console.log("data, ", response.data);
         console.log("id, ", response.data.id);
@@ -78,9 +83,11 @@ const Vehicules = () => {
     console.log("newVehicle, ", newVehicle);
 
     axios
-      .post("http://localhost:5000/vehicules", newVehicle, {
-        withCredentials: true,
-      })
+      .post("http://localhost:5000/vehicules", newVehicle,
+      //  {
+      //   withCredentials: true,
+      // }
+      )
       .then((response) => {
         console.log(response.data);
       });
@@ -115,9 +122,9 @@ const Vehicules = () => {
               <th scope="col" className="px-6 py-3">
                 Client Name
               </th>
-              {/* <th scope="col" className="px-6 py-3">
-                Role
-              </th> */}
+              <th scope="col" className="px-6 py-3">
+                Durée Abonnement
+              </th>
               <th scope="col" className="px-6 py-3">
                 Action
               </th>
@@ -134,9 +141,10 @@ const Vehicules = () => {
                 </td>
                 <td className="px-6 py-4">{Vehicule.matricule}</td>
                 {/* <td className="px-6 py-4">{Vehicule.user.username}</td> */}
-                {/* <td className="px-6 py-4">{user.role}</td> */}
+                <td className="px-6 py-4">{Vehicule.username}</td>
+                <td className="px-6 py-4">{Vehicule.duree_abonnement}</td>
                 <td className="px-6 py-4">
-                  <a
+                  {/* <a
                     href="#"
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
@@ -147,7 +155,7 @@ const Vehicules = () => {
                     className="font-medium text-green-600 dark:text-green-500 hover:underline mx-3"
                   >
                     Consulter
-                  </a>
+                  </a> */}
                 </td>
               </tr>
             ))}
