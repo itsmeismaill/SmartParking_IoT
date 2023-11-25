@@ -95,11 +95,11 @@ def get_vehicules_users_by_id(userId):
     
     if userId:
         vehicules = Vehicule.get_all_by_user(userId)
-        
         # Get subscription information for each vehicle
         vehicule_info = []
         for vehicule in vehicules:
             abonnement = Abonnement.get_by_id(vehicule.get('abonnement_id'))
+            print("======"+abonnement)
             times_parking = TimeParking.get_by_vehicule_id(TimeParking("",vehicule["id"],None,None))
             for time_parking in times_parking:
                 print(time_parking)
@@ -110,11 +110,11 @@ def get_vehicules_users_by_id(userId):
                 time_parking['difference'] = "{:02}h{:02}m{:02}s".format(hours, minutes, seconds)
 
             print(times_parking)
-            hours, remainder = divmod(abonnement["duree"].seconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
-            abonnement["duree"]="{:02}h{:02}m{:02}s".format(hours, minutes, seconds)
+            # hours, remainder = divmod(abonnement["duree"].seconds, 3600)
+            # minutes, seconds = divmod(remainder, 60)
+            # abonnement["duree"]="{:02}h{:02}m{:02}s".format(hours, minutes, seconds)
             vehicule_info.append({'vehicule': vehicule, 'abonnement': abonnement ,'time_parking':times_parking})
-
+            print(vehicule_info)
         return jsonify(vehicule_info)
     else:
         return jsonify({'error': 'User not authenticated'}), 401
@@ -178,6 +178,8 @@ def car_entred(matricule):
     if(abonnement['duree']>0):
         timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
         timeparking.save()
+        socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparking})
+
         return "Car entred successfuly",202
 
     # turn_on_led('red')
@@ -212,7 +214,7 @@ def car_exit(matricule):
         'id': timeparking['id'],
         'vehicule_id': timeparking['vehicule_id'],
         'date_entree': timeparking['date_entree'],
-        'date_sortie': datetime.datetime.now()
+        'date_sortie': str(datetime.datetime.now())
     }
 
     socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparkingData})
@@ -243,8 +245,16 @@ def car_in_out(matricule):
         # update abonnement object
         Abonnement.update(Abonnement(abonnement["id"],abonnement["duree"]-new_duration,abonnement["montant"]))
 
+        timeparkingData = {
+            'vehicule_id': "timeparking['vehicule_id']",
+            'date_entree': "timeparking['date_entree']",
+            'date_sortie': "datetime.datetime.now()"
+        }
+
         # update time prking object object
         TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
+
+        socketio.emit('car_event', {'message': 'Car exit successfully', 'timeparking': timeparkingData})
 
         
         return "Car go out of parking",200
@@ -258,6 +268,13 @@ def car_in_out(matricule):
         if(abonnement['duree']>0):
             timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
             timeparking.save()
+
+            timeparkingData = {
+                'vehicule_id': "timeparking['vehicule_id']",
+                'date_entree': "timeparking['date_entree']",
+            }
+            socketio.emit('car_event', {'message': 'Car entered successfully', 'timeparking': timeparkingData})
+
             return "Car entred successfuly",202
 
         # turn_on_led('red')

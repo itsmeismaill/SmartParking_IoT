@@ -54,7 +54,7 @@ const Dashboard = () => {
       console.log(msg);
     });
 
-    socket.current.on("car_entered", (data) => {
+    socket.current.on("car_event", (data) => {
       console.log(data.message);
       console.log("Timeparking data:", data.timeparking.matricule);
 
