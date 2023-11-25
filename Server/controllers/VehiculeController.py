@@ -11,6 +11,8 @@ from flask import Blueprint
 from flask_socketio import emit
 from common import socketio
 
+from models.User import User
+
 # import serial
 
 vehicule = Blueprint('vehicule', __name__)
@@ -43,11 +45,18 @@ def get_all_vehicules():
 
         abonnement = Abonnement.get_by_id(abonnement_id)
 
+        userId = vehicule.get('user_id') if isinstance(vehicule, dict) else vehicule.user_id;
+
+        userData = User.get_by_id(User (userId,"","","","","",""))
+        print("userData, ", userData)
+
+
         vehicule_data = {
             'id': vehicule.get('id') if isinstance(vehicule, dict) else vehicule.id,
             'matricule': vehicule.get('matricule') if isinstance(vehicule, dict) else vehicule.matricule,
             'abonnement_id': abonnement_id,
-            'user_id': vehicule.get('user_id') if isinstance(vehicule, dict) else vehicule.user_id,
+            'user_id': userId,
+            'username': userData.get("username"),
             'duree_abonnement': abonnement.get('duree') if abonnement else None
         }
         vehicules_with_abonnement.append(vehicule_data)

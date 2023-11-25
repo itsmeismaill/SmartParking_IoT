@@ -28,7 +28,7 @@ app.register_blueprint(vehicule)
 camera = cv2.VideoCapture(0)
 
 def webcam():
-    # camera = cv2.VideoCapture(0)
+    camera = cv2.VideoCapture(0)
 
     while True:
         success, frame = camera.read()

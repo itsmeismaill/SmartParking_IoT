@@ -198,12 +198,12 @@ const Dashboard = () => {
           </h3>
           {/* <p className="text-gray-600 text-center">Camera will be here</p> */}
           {/* <WebCam /> */}
-          {/* <img
+          <img
             src="http://localhost:5000/webcam"
             id="camera-stream"
             alt="Camera Stream"
             className="w-full h-auto"
-          /> */}
+          />
         </div>
       </div>
     </div>

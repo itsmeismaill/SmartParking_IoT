@@ -8,7 +8,7 @@ const Vehicules = () => {
     matricule: "",
     duree: "",
     montant: "",
-    // userId: "",
+    username: "",
     abonnementId: "",
   });
 
@@ -122,9 +122,9 @@ const Vehicules = () => {
               <th scope="col" className="px-6 py-3">
                 Client Name
               </th>
-              {/* <th scope="col" className="px-6 py-3">
-                Role
-              </th> */}
+              <th scope="col" className="px-6 py-3">
+                Durée Abonnement
+              </th>
               <th scope="col" className="px-6 py-3">
                 Action
               </th>
@@ -141,10 +141,10 @@ const Vehicules = () => {
                 </td>
                 <td className="px-6 py-4">{Vehicule.matricule}</td>
                 {/* <td className="px-6 py-4">{Vehicule.user.username}</td> */}
-                <td className="px-6 py-4">Without Name</td>
-                {/* <td className="px-6 py-4">{user.role}</td> */}
+                <td className="px-6 py-4">{Vehicule.username}</td>
+                <td className="px-6 py-4">{Vehicule.duree_abonnement}</td>
                 <td className="px-6 py-4">
-                  <a
+                  {/* <a
                     href="#"
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
@@ -155,7 +155,7 @@ const Vehicules = () => {
                     className="font-medium text-green-600 dark:text-green-500 hover:underline mx-3"
                   >
                     Consulter
-                  </a>
+                  </a> */}
                 </td>
               </tr>
             ))}
