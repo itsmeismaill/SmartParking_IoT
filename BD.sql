@@ -18,6 +18,7 @@ CREATE TABLE users (
 -- Table abonnement
 CREATE TABLE abonnements (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    initial_duree INT NOT NULL,
     duree INT NOT NULL,
     montant DECIMAL(10, 2) NOT NULL
 );

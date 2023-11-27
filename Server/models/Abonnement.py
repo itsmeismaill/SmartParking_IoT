@@ -20,7 +20,7 @@ class Abonnement:
         }
         
     def save(self):
-        self.cursor.execute("INSERT INTO `abonnements` (`id`, `duree`, `montant`) VALUES (NULL, %s, %s);",(self.duree,self.montant))
+        self.cursor.execute("INSERT INTO `abonnements` (`id`, `duree`, `montant`, `initial_duree`) VALUES (NULL, %s, %s, %s);",(self.duree,self.montant,self.duree))
         conn.commit()
         print("Abonnement added successfully")
         
