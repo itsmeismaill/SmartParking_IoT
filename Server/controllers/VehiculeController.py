@@ -77,21 +77,13 @@ def get_vehicule_by_id(id):
     print(vehicule)
 
 
-    socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': vehicule})
+    # socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': vehicule})
     return jsonify(vehicule)
 
-
-# <<<<<<< HEAD
-# @vehicule.route('/vehicules_users', methods=['GET'])
-# def get_vehicules_users_by_id():
-#     user_id = session.get("user_id")
-#     print("mon id", user_id)
-# =======
 
 
 @vehicule.route('/vehicules_users/<int:userId>', methods=['GET'])
 def get_vehicules_users_by_id(userId):
-# >>>>>>> main
     
     if userId:
         vehicules = Vehicule.get_all_by_user(userId)
@@ -178,6 +170,9 @@ def car_entred(matricule):
     if(abonnement['duree']>0):
         timeparking = TimeParking("",vehicule["id"],datetime.datetime.now(),None)
         timeparking.save()
+
+
+
         socketio.emit('car_entered', {'message': 'Car entered successfully', 'timeparking': timeparking})
 
         return "Car entred successfuly",202
@@ -232,6 +227,8 @@ def car_in_out(matricule):
     abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
     timeparking = TimeParking.get_last_by_date_entrer(TimeParking("",vehicule["id"],None,None))[0]
 
+    user = User.get_by_id(vehicule['user_id'])
+
     if(timeparking['date_sortie'] is None):
         #calcul difference between two date time
         duration_seconds = int(((datetime.datetime.now())-timeparking["date_entree"]).total_seconds())
@@ -245,14 +242,16 @@ def car_in_out(matricule):
         # update abonnement object
         Abonnement.update(Abonnement(abonnement["id"],abonnement["duree"]-new_duration,abonnement["montant"]))
 
-        timeparkingData = {
-            'vehicule_id': "timeparking['vehicule_id']",
-            'date_entree': "timeparking['date_entree']",
-            'date_sortie': "datetime.datetime.now()"
-        }
 
         # update time prking object object
         TimeParking.update(TimeParking(timeparking["id"],timeparking["vehicule_id"],timeparking["date_entree"],datetime.datetime.now()))
+
+        timeparkingData = {
+            'matricule': matricule,
+            'clientName': user.username,
+            'date_entree': timeparking["date_entree"],
+            'date_sortie': datetime.datetime.now()
+        }
 
         socketio.emit('car_event', {'message': 'Car exit successfully', 'timeparking': timeparkingData})
 
@@ -270,8 +269,10 @@ def car_in_out(matricule):
             timeparking.save()
 
             timeparkingData = {
-                'vehicule_id': "timeparking['vehicule_id']",
-                'date_entree': "timeparking['date_entree']",
+                'matricule': matricule,
+                'clientName': user.username,
+                'date_entree': datetime.datetime.now(),
+                'date_sortie': "stationnée"
             }
             socketio.emit('car_event', {'message': 'Car entered successfully', 'timeparking': timeparkingData})
 

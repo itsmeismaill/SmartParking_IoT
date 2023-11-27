@@ -39,8 +39,9 @@ if (sessionStorage.getItem("user")) {
 const Dashboard = () => {
   const [enteredVehiculeData, setEnteredVehiculeData] = useState({
     matricule: "",
-    user_id: "",
-    // entry_time: "",
+    clientName: "",
+    date_entree: "",
+    date_sortie: "",
   });
 
   console.log("userRole from template, ", userRole);
@@ -62,11 +63,12 @@ const Dashboard = () => {
 
       setEnteredVehiculeData({
         matricule: data.timeparking.matricule,
-        user_id: data.timeparking.user_id,
-        // entry_time: data.timeparking.entry_time,
+        clientName: data.timeparking.clientName,
+        date_entree: data.timeparking.date_entree,
+        date_sortie: data.timeparking.date_sortie,
       });
 
-      toast.success(data.message, {position: toast.POSITION.TOP_CENTER});
+      toast.success(data.message, { position: toast.POSITION.TOP_CENTER });
     });
 
     return () => {
@@ -102,7 +104,7 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto mt-8 m-14">
-    <ToastContainer />
+      <ToastContainer />
       <div className="flex">
         <div className="w-2/3 bg-white rounded-md p-6 m-4">
           <h3 className="text-xl font-semibold mb-2">Parking statistic</h3>
@@ -121,13 +123,19 @@ const Dashboard = () => {
               <div className="info-item flex">
                 <p className="text-gray-600 font-semibold">Client Name</p>
                 <span className="text-blue-500 font-semibold mx-auto">
-                  {enteredVehiculeData.user_id}
+                  {enteredVehiculeData.clientName}
                 </span>
               </div>
               <div className="info-item flex">
                 <p className="text-gray-600 font-semibold">Date Entrée</p>
                 <span className="text-blue-500 font-semibold mx-auto">
-                  {/*enteredVehiculeData.entry_time*/}
+                  {enteredVehiculeData.date_entree}
+                </span>
+              </div>
+              <div className="info-item flex">
+                <p className="text-gray-600 font-semibold">Date Sortie</p>
+                <span className="text-blue-500 font-semibold mx-auto">
+                  {enteredVehiculeData.date_sortie}
                 </span>
               </div>
             </div>

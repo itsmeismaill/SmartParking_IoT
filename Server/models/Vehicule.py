@@ -54,3 +54,4 @@ class Vehicule:
         Vehicule.cursor.execute("SELECT * FROM vehicules WHERE user_id=%s",(id))
         Vehicule.myresult = Vehicule.cursor.fetchall()
         return Vehicule.myresult
+    
