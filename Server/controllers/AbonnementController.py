@@ -18,7 +18,11 @@ def get_abonnement_by_id(id):
 @abonnement.route('/abonnements', methods=['POST'], )
 def add_abonnement():
     data = request.get_json()
-    abonnement = Abonnement(0,data['duree']*60,data['montant'])
+
+    # print("-------------data['duree']---------", data['duree'])
+    # print("-------------data['duree']---------", int(data['duree']*3)
+
+    abonnement = Abonnement(0,int(data['duree'])*60, int(data['duree'])*3)
     savedAbd = abonnement.save()
     print(savedAbd)
     return jsonify(savedAbd.__dict__)

@@ -20,18 +20,31 @@ class Abonnement:
         }
         
     def save(self):
-        self.cursor.execute("INSERT INTO `abonnements` (`id`, `duree`, `montant`, `initial_duree`) VALUES (NULL, %s, %s, %s);",(self.duree,self.montant,self.duree))
-        conn.commit()
-        print("Abonnement added successfully")
-        
-        self.cursor.execute("SELECT * FROM `abonnements` WHERE `id` = LAST_INSERT_ID();")
-        saved_data = self.cursor.fetchone()
+        try:
+            # Explicitly convert duree to an integer
+            duree_int = int(self.duree)
 
-        self.id = saved_data['id']
-        self.duree = saved_data['duree']
-        self.montant = saved_data['montant']
+            # Use parameters in the execute method to avoid SQL injection
+            self.cursor.execute(
+                "INSERT INTO `abonnements` (`id`, `duree`, `montant`, `initial_duree`) VALUES (NULL, %s, %s, %s);",
+                (duree_int, self.montant, duree_int)
+            )
+            conn.commit()
+            print("Abonnement added successfully")
 
-        return self
+            # Use LAST_INSERT_ID() to get the last inserted ID
+            self.cursor.execute("SELECT * FROM `abonnements` WHERE `id` = LAST_INSERT_ID();")
+            saved_data = self.cursor.fetchone()
+
+            self.id = saved_data['id']
+            self.duree = saved_data['duree']
+            self.montant = saved_data['montant']
+
+            return self
+        except Exception as e:
+            # Handle any exceptions, print the error, and return None
+            print(f"Error adding abonnement: {e}")
+            return None
     
     def update(self):
         self.cursor.execute("UPDATE `abonnements` SET `duree` = %s, `montant` = %s WHERE `abonnements`.`id` = %s;",(self.duree,self.montant,self.id))

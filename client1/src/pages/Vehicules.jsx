@@ -3,12 +3,13 @@ import { useState, useEffect } from "react";
 
 const Vehicules = () => {
   const [vehiculeData, setVehiculeData] = useState([]);
+  const [userData, setUserData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newVehiculeData, setNewVehiculeData] = useState({
     matricule: "",
     duree: "",
     montant: "",
-    username: "",
+    user_id: "",
     abonnementId: "",
   });
 
@@ -21,6 +22,16 @@ const Vehicules = () => {
       })
       .catch((error) =>
         console.error("Erreur de récupération des vehicules", error)
+      );
+
+    axios
+      .get("http://localhost:5000/users")
+      .then((response) => {
+        console.log("users: ", response.data);
+        setUserData(response.data);
+      })
+      .catch((error) =>
+        console.error("Erreur de récupération des users", error)
       );
   }, []);
 
@@ -40,61 +51,59 @@ const Vehicules = () => {
     }));
   };
 
-  const handleCreateVehicule = () => {
-    console.log("Create Vehicule Logic", newVehiculeData);
+  const handleUserSelectChange = (e) => {
+    const { value } = e.target;
+    setNewVehiculeData((prevUserData) => ({
+      ...prevUserData,
+      user_id: value,
+    }));
+  };
 
-    const abonnementData = {
-      duree: newVehiculeData.duree,
-      montant: newVehiculeData.montant,
-      inital_duree: newVehiculeData.duree,
+  const handleCreateVehicule = async () => {
+    try {
+      console.log("Create Vehicule Logic", newVehiculeData);
 
-    };
+      const abonnementData = {
+        duree: newVehiculeData.duree,
+        // montant: newVehiculeData.montant,
+      };
 
-    // console.log("abonnementData, ", abonnementData);
+      console.log("abonnementData, ", abonnementData);
 
-    axios
-      .post(
+      const abonnementResponse = await axios.post(
         "http://localhost:5000/abonnements",
         abonnementData
-        //  {
-        //   withCredentials: true,
-        // }
-      )
-      .then((response) => {
-        console.log("data, ", response.data);
-        console.log("id, ", response.data.id);
+      );
 
-        setNewVehiculeData({
-          abonnementId: response.data.id,
-        });
+      console.log("abonnementResponse, ", abonnementResponse.data);
 
-        // axios
-        //   .post("http://localhost:5000/vehicules", newVehicle, {
-        //     withCredentials: true,
-        //   })
-        //   .then((response) => {
-        //     console.log(response.data);
-        //   });
+      const newVehicle = {
+        matricule: newVehiculeData.matricule,
+        abonnementId: abonnementResponse.data.id,
+        userId: newVehiculeData.user_id,
+      };
+
+      console.log("newVehicle, ", newVehicle);
+
+      const vehiculeResponse = await axios.post(
+        "http://localhost:5000/vehicules",
+        newVehicle
+      );
+
+      console.log("vehiculeResponse, ", vehiculeResponse.data);
+
+      setNewVehiculeData({
+        matricule: "",
+        duree: "",
+        montant: "",
+        user_id: "",
+        abonnementId: "",
       });
 
-    const newVehicle = {
-      matricule: newVehiculeData.matricule,
-      abonnementId: newVehiculeData.abonnementId,
-    };
-
-    console.log("newVehicle, ", newVehicle);
-
-    axios
-      .post("http://localhost:5000/vehicules", newVehicle,
-      //  {
-      //   withCredentials: true,
-      // }
-      )
-      .then((response) => {
-        console.log(response.data);
-      });
-
-    closeModal();
+      closeModal();
+    } catch (error) {
+      console.error("Error creating vehicule:", error);
+    }
   };
 
   return (
@@ -187,6 +196,27 @@ const Vehicules = () => {
                     htmlFor="matricule"
                     className="block text-gray-600 mb-2"
                   >
+                    Client
+                  </label>
+
+                  <select
+                    value={newVehiculeData.user_id}
+                    onChange={handleUserSelectChange}
+                    className="mt-1 p-3 block w-full rounded-md border-2 border-gray-300 focus:outline-none focus:border-blue-500"
+                  >
+                    {userData.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.username}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mb-6">
+                  <label
+                    htmlFor="matricule"
+                    className="block text-gray-600 mb-2"
+                  >
                     Matricule
                   </label>
                   <input
@@ -218,10 +248,11 @@ const Vehicules = () => {
                     Montant
                   </label>
                   <input
+                    disabled
                     type="text"
                     id="montant"
                     name="montant"
-                    value={newVehiculeData.montant}
+                    value={newVehiculeData.duree * 3}
                     onChange={handleInputChange}
                     className="form-input mt-1 p-3 block w-full rounded-md border-2 border-gray-300 focus:outline-none focus:border-blue-500"
                   />
