@@ -79,9 +79,27 @@ const Dashboard = () => {
 
     socket.current.on("car_event", (data) => {
       console.log(data.message);
-      console.log("Timeparking data:", data.timeparking.matricule);
+      console.log(data?.timeparking);
+      console.log("Timeparking data:", data.timeparking?.matricule);
+      console.log("Timeparking data:", data.timeparking?.matricule);
+      console.log("Timeparking data:", data.timeparking?.matricule);
 
       // console.log("state, ", data.timeparking?.matricule);
+
+      if(data.timeparking.duree == 0){
+
+        setEnteredVehiculeData({
+          matricule: data.timeparking?.matricule,
+          clientName: data.timeparking.clientName,
+          date_entree: "",
+          date_sortie: "",
+        });
+
+        return toast.warning(data.message, { position: toast.POSITION.TOP_CENTER });
+
+        
+        // getTimeParkingWithVehicule();
+      }
 
       const dateTimeEntree = new Date(data.timeparking.date_entree);
 
@@ -106,7 +124,7 @@ const Dashboard = () => {
       //   date_sortie: data.timeparking.date_sortie,
       // });
 
-    
+  
 
       toast.success(data.message, { position: toast.POSITION.TOP_CENTER });
 

@@ -115,7 +115,7 @@ const HomeClient = () => {
               <Tr key={element.vehicule.id}>
                 <Td textAlign="center">{element.vehicule?.matricule}</Td>
                 <Td textAlign="center">{element.vehicule?.abonnement_id}</Td>
-                <Td textAlign="center">{element.abonnement.duree || ''}</Td>
+                <Td textAlign="center">{element.abonnement.duree }</Td>
                 <Td textAlign="center">
                   <Button onClick={() => openModal(element)}>Show Details</Button>
                 </Td>

@@ -8,19 +8,17 @@ timeparking = Blueprint('timeparking', __name__)
 
 @timeparking.route('/timeparkings', methods=['GET'], )
 def get_all_timeparkings():
-    timeparkings = TimeParking.get_all()
+    vehicules = Vehicule.get_all()
 
     timeparkings_with_vehicule = []
 
-    for timeparking in timeparkings:
-
-        vehicule_id = timeparking['vehicule_id']
-
-        vehicule = Vehicule.get_by_id( Vehicule(vehicule_id, "", "", ""))
+    for vehicule in vehicules:
+        timeparking = TimeParking.get_last_by_date_entrer(TimeParking("",vehicule["id"],None,None))[0]
 
         user = User.get_by_id(User(vehicule['user_id'], "", "", "", "", "", ""))
 
         abonnement = Abonnement.get_by_id(vehicule['abonnement_id'])
+
 
         timeparking_with_vehicule = {
             'id': timeparking['id'],
@@ -32,7 +30,6 @@ def get_all_timeparkings():
             'clientName': user['username'],
         }
 
-        print('-----------------', timeparking_with_vehicule, '-----------------')
 
         timeparkings_with_vehicule.append(timeparking_with_vehicule)
 

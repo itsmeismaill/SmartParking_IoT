@@ -40,8 +40,8 @@ import serial
 import time
 
 # Ardiuno
-# arduino_port = 'COM10'
-# ser = serial.Serial(arduino_port, baudrate=9600, timeout=1)
+arduino_port = 'COM3'
+ser = serial.Serial(arduino_port, baudrate=9600, timeout=1)
 
 
 
@@ -80,6 +80,7 @@ def webcam():
                         print("------------------------------------")
                         print("#       vehicule not found         #")
                         print("------------------------------------")
+                        ser.write('0'.encode())
                         time.sleep(10)
                    else:
                         abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
@@ -94,7 +95,8 @@ def webcam():
                             #new duration
                             new_duration = duration_seconds//60
                             
-                            print(abonnement["duree"]-new_duration)
+                            if(abonnement["duree"]-new_duration)<0:
+                                new_duration=abonnement["duree"]
 
                             # update abonnement object
                             Abonnement.update(Abonnement(abonnement["id"],abonnement["duree"]-new_duration,abonnement["montant"]))
@@ -115,6 +117,7 @@ def webcam():
                             print("------------------------------------")
                             print("#      Car go out of parking       #")
                             print("------------------------------------")
+                            ser.write('1'.encode())
                             time.sleep(10)
 
                         else:
@@ -143,15 +146,27 @@ def webcam():
                                     print("#      Car entred successfuly      #")
                                     print("------------------------------------")
                                     # Turn on green LED (pin 7) for 10 seconds
-                                    # ser.write('2'.encode())
+                                    ser.write('1'.encode())
                                     time.sleep(5)
                                 else:
+
+                                    timeparkingData = {
+                                        'matricule': matricule,
+                                        'clientName': user['username'],
+                                        'duree': abonnement['duree'],
+                                        # 'date_entree': "",
+                                        # 'date_sortie': ""
+                                    }
+
                                     print("------------------------------------")
                                     print("#        Abonnement expired        #")
                                     print("------------------------------------")
                                     # Turn on red LED (pin 8) for 10 seconds
                                     # Turn on red LED for 5 seconds
                                     # ser.write('1'.encode())
+
+                                    socketio.emit('car_event', {'message': ' Abonnement expired, try to make new Subscription !', 'timeparking': timeparkingData})
+                                    ser.write('0'.encode())
                                     time.sleep(5)
 
                 else:
