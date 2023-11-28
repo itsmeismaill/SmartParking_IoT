@@ -40,8 +40,8 @@ import serial
 import time
 
 # Ardiuno
-arduino_port = 'COM3'
-ser = serial.Serial(arduino_port, baudrate=9600, timeout=1)
+# arduino_port = 'COM3'
+# ser = serial.Serial(arduino_port, baudrate=9600, timeout=1)
 
 
 
@@ -80,7 +80,7 @@ def webcam():
                         print("------------------------------------")
                         print("#       vehicule not found         #")
                         print("------------------------------------")
-                        ser.write('0'.encode())
+                        # ser.write('0'.encode())
                         time.sleep(10)
                    else:
                         abonnement=Abonnement.get_by_id(vehicule['abonnement_id'])
@@ -117,7 +117,7 @@ def webcam():
                             print("------------------------------------")
                             print("#      Car go out of parking       #")
                             print("------------------------------------")
-                            ser.write('1'.encode())
+                            # ser.write('1'.encode())
                             time.sleep(10)
 
                         else:
@@ -146,7 +146,7 @@ def webcam():
                                     print("#      Car entred successfuly      #")
                                     print("------------------------------------")
                                     # Turn on green LED (pin 7) for 10 seconds
-                                    ser.write('1'.encode())
+                                    # ser.write('1'.encode())
                                     time.sleep(5)
                                 else:
 
