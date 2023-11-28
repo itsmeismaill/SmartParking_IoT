@@ -38,7 +38,7 @@ class User:
     
     @staticmethod
     def get_all():
-        User.cursor.execute("SELECT * FROM users")
+        User.cursor.execute("SELECT * FROM users where role='client'")
         User.myresult = User.cursor.fetchall()
         return User.myresult
     

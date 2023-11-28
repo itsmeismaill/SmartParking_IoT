@@ -35,7 +35,8 @@ vehicule = Blueprint('vehicule', __name__)
 @vehicule.route('/vehicules', methods=['GET'])
 def get_all_vehicules():
     vehicules = Vehicule.get_all()
-
+    users = User.get_all()
+    data=[]
     vehicules_with_abonnement = []
     for vehicule in vehicules:
         if isinstance(vehicule, dict):
@@ -45,7 +46,7 @@ def get_all_vehicules():
 
         abonnement = Abonnement.get_by_id(abonnement_id)
 
-        userId = vehicule.get('user_id') if isinstance(vehicule, dict) else vehicule.user_id;
+        userId = vehicule.get('user_id') if isinstance(vehicule, dict) else vehicule.user_id
 
         userData = User.get_by_id(User (userId,"","","","","",""))
         print("userData, ", userData)
@@ -60,14 +61,19 @@ def get_all_vehicules():
             'duree_abonnement': abonnement.get('duree') if abonnement else None
         }
         vehicules_with_abonnement.append(vehicule_data)
+        
+    data.append(vehicules_with_abonnement)
+    data.append(users)
 
-    return jsonify(vehicules_with_abonnement)
+
+
+    return jsonify(data)
 
 
 @vehicule.route('/vehiculesUsers', methods=['GET'])
 def get_all_vehicules_users():
     vehicules = Vehicule.get_all()
-    print("vehicules, ", vehicules);
+    print("vehicules, ", vehicules)
     return jsonify(vehicules)
 
 @vehicule.route('/vehicules/<int:id>', methods=['GET'], )

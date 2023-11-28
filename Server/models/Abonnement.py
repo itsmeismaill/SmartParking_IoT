@@ -35,16 +35,17 @@ class Abonnement:
             # Use LAST_INSERT_ID() to get the last inserted ID
             self.cursor.execute("SELECT * FROM `abonnements` WHERE `id` = LAST_INSERT_ID();")
             saved_data = self.cursor.fetchone()
-
             self.id = saved_data['id']
             self.duree = saved_data['duree']
             self.montant = saved_data['montant']
-
             return self
         except Exception as e:
             # Handle any exceptions, print the error, and return None
             print(f"Error adding abonnement: {e}")
             return None
+        
+
+     
     
     def update(self):
         self.cursor.execute("UPDATE `abonnements` SET `duree` = %s, `montant` = %s WHERE `abonnements`.`id` = %s;",(self.duree,self.montant,self.id))

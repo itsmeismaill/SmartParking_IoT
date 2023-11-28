@@ -31,7 +31,7 @@ def add_abonnement():
 @abonnement.route('/abonnements/<int:id>', methods=['PUT'], )
 def update_abonnement(id):
     data = request.get_json()
-    abonnement = Abonnement(data['id'],data['duree'],data['montant'])
+    abonnement = Abonnement(id,data['duree'],data['montant'])
     abonnement.update()
     return jsonify(abonnement.__dict__)
 
