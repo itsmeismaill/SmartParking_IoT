@@ -14,7 +14,7 @@ user = Blueprint('user', __name__)
 @user.route('/users', methods=['GET'], )
 def get_all_users():
     users = User.get_all()
-    return jsonify(users)
+    return users
 
 @user.route('/users/<int:id>', methods=['GET'], )
 def get_user_by_id(id):

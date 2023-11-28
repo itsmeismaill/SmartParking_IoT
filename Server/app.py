@@ -166,7 +166,7 @@ def webcam():
                                     # ser.write('1'.encode())
 
                                     socketio.emit('car_event', {'message': ' Abonnement expired, try to make new Subscription !', 'timeparking': timeparkingData})
-                                    ser.write('0'.encode())
+                                    # ser.write('0'.encode())
                                     time.sleep(5)
 
                 else:
